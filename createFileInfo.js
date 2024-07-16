@@ -67,7 +67,7 @@ async function runCreateFileInfo() {
 
     try {
 
-        const projectRoot = path.join(__dirname, '..'); // Ajuste conforme necessário
+        const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
         const allFiles = await getAllFiles(projectRoot);
         let versionCompile = ""
         const fileInfos = await Promise.all(allFiles.map(async file => {

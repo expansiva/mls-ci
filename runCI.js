@@ -4,7 +4,7 @@ const { runCompileTs } = require('./compileTs');
 const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
 
-async function init() {
+async function runCI() {
 
     try{
 
@@ -41,4 +41,4 @@ async function init() {
 
 }
 
-module.exports = {init};
+module.exports = {runCI};

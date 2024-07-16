@@ -2,7 +2,7 @@ const AdmZip = require('adm-zip');
 const path = require('path');
 const fs = require('fs');
 
-const projectRoot = path.resolve(__dirname, '..');
+const projectRoot = path.resolve(__dirname, '../..');
 const sourceDir = path.join(projectRoot, 'preBuild');
 const outputZip = path.join(projectRoot, 'compiled.zip');
 

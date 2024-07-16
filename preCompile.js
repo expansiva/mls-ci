@@ -47,7 +47,7 @@ async function runPreCompile() {
 
     try {
 
-        const projectRoot = path.resolve(__dirname, '..');
+        const projectRoot = path.resolve(__dirname, '../..');
         const srcDir = path.join(projectRoot, 'l2');
         const destDir = path.join(projectRoot, 'prel2');
 
