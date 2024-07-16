@@ -1,0 +1,19 @@
+{
+  "name": "mls-ci",
+  "version": "1.0.0",
+  "description": "A library to use compile git CI",
+  "main": "runCI.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expansiva/mls-ci.git"
+  },
+  "author": "expansiva",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/expansiva/mls-ci/issues"
+  },
+  "homepage": "https://github.com/expansiva/mls-ci#readme"
+}
