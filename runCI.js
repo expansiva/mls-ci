@@ -3,6 +3,7 @@ const { runPreCompile } = require('./preCompile');
 const { runCompileTs } = require('./compileTs');
 const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
+const { runCreateTsconfig } = require('./createTsConfig');
 
 async function runCI() {
 
@@ -11,6 +12,10 @@ async function runCI() {
         console.log('----------Start download------------------');
         await runDownload();
         console.log('----------End download------------------');
+
+        console.log('----------Start createTsConfig------------------');
+        await runCreateTsconfig();
+        console.log('----------End createTsConfig------------------');
 
         console.log('----------Start preCompile------------------');
         await runPreCompile();
