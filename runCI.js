@@ -47,7 +47,7 @@ async function runCI() {
         console.log('----------End compactSource------------------');
 
         console.log('----------Start callWork------------------');
-        await runCallWork(GITHUB_PROJECT, GITHUB_OWNER, lastModify, GITHUB_SECRETS);
+        await runCallWork(GITHUB_PROJECT, GITHUB_OWNER, lastModify);
         console.log('----------End callWork------------------');
 
 
