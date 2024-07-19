@@ -4,6 +4,7 @@ const { runCompileTs } = require('./compileTs');
 const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
 const { runCreateTsconfig } = require('./createTsConfig');
+const { runCompactSource } = require('./compactSource');
 
 async function runCI() {
 
@@ -36,6 +37,10 @@ async function runCI() {
         console.log('----------Start compact------------------');
         await runCompact();
         console.log('----------End compact------------------');
+
+        console.log('----------Start compactSource------------------');
+        await runCompactSource();
+        console.log('----------End compactSource------------------');
 
 
 
