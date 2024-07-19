@@ -11,7 +11,7 @@ async function runCI() {
 
     try{
 
-        const { GITHUB_PROJECT, GITHUB_REPO, GITHUB_OWNER, GITHUB_BRANCH } = process.env;
+        const { GITHUB_PROJECT, GITHUB_REPO, GITHUB_OWNER, GITHUB_BRANCH, GITHUB_SECRETS } = process.env;
         let lastModify = '';
 
         console.log('----------Start download------------------');
@@ -35,7 +35,7 @@ async function runCI() {
         console.log('----------End compileTs Definition------------------');
 
         console.log('----------Start createFileInfo------------------');
-        await runCreateFileInfo();
+        lastModify = await runCreateFileInfo();
         console.log('----------End createFileInfo------------------');
 
         console.log('----------Start compact------------------');
@@ -47,7 +47,7 @@ async function runCI() {
         console.log('----------End compactSource------------------');
 
         console.log('----------Start callWork------------------');
-        await runCallWork(GITHUB_PROJECT, GITHUB_OWNER, lastModify);
+        await runCallWork(GITHUB_PROJECT, GITHUB_OWNER, lastModify, GITHUB_SECRETS);
         console.log('----------End callWork------------------');
 
 
