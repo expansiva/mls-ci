@@ -64,7 +64,6 @@ function getFileOID(commit, filePath) {
 
 async function runCreateFileInfo() {
 
-
     try {
 
         const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
@@ -97,6 +96,8 @@ async function runCreateFileInfo() {
         await fs.promises.writeFile(outputPath, JSON.stringify(js, null, 2));
 
         console.log(`File information has been written to ${outputPath}`);
+
+        return lastModify.toISOString();
 
     } catch (error) {
 

@@ -5,10 +5,14 @@ const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
 const { runCreateTsconfig } = require('./createTsConfig');
 const { runCompactSource } = require('./compactSource');
+const { runCallWork } = require('./callWork');
 
 async function runCI() {
 
     try{
+
+        const { GITHUB_PROJECT, GITHUB_REPO, GITHUB_OWNER, GITHUB_BRANCH } = process.env;
+        let lastModify = '';
 
         console.log('----------Start download------------------');
         await runDownload();
@@ -42,6 +46,9 @@ async function runCI() {
         await runCompactSource();
         console.log('----------End compactSource------------------');
 
+        console.log('----------Start callWork------------------');
+        await runCallWork(GITHUB_PROJECT, GITHUB_OWNER, lastModify);
+        console.log('----------End callWork------------------');
 
 
     }catch(e){
