@@ -6,7 +6,6 @@ async function runCallWork(project, orgName, lastModify) {
         const collabToken = process.env.COLLAB_TOKEN; // secret configured in the gitHub or gitLab Actions secrets
         console.log('Secret:' + collabToken +' prj:'+project+' orgName:'+orgName +' lastModify:'+lastModify);
         if (!collabToken) return false;
-        return true;
 
         if(!project || !orgName || !lastModify){
             console.log('Undefined parameters in runCallWork');
