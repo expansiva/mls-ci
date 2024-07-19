@@ -28,7 +28,10 @@ async function runCallWork(project, orgName, lastModify) {
                 secret: collabToken,
             })
         });
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok){ 
+            const msg = await response.text();
+            throw new Error(`HTTP error! Status: ${response.status}, msg: ${msg}`);
+        }
         console.log('Ok to call update work');
         return true;
 
