@@ -21,7 +21,7 @@ async function runCallWork(project, orgName, lastModify) {
             },
             body: JSON.stringify({
                 action: "onProjectUpdated",
-                project,
+                project:+project,
                 orgName,
                 projectDriver: GITHUBBRAND,
                 lastModify, // ex: "2024-07-18T19:07:22.238Z"
