@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-async function runCallWork(project, orgName, lastModify) {
+async function runCallWork(project, orgName, driver, lastModify) {
 
     try {
 
@@ -13,7 +13,7 @@ async function runCallWork(project, orgName, lastModify) {
             return false;
         }
 
-        const GITHUBBRAND = 'GitHub';
+        const BRAND = driver;//'GitHub';
         const response = await fetch('https://collab.codes/exec', {
             method: 'POST',
             headers: {
@@ -23,7 +23,7 @@ async function runCallWork(project, orgName, lastModify) {
                 action: "onProjectUpdated",
                 project:+project,
                 orgName,
-                projectDriver: GITHUBBRAND,
+                projectDriver: BRAND,
                 lastModify, // ex: "2024-07-18T19:07:22.238Z"
                 secret: collabToken,
             })

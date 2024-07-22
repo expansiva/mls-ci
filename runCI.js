@@ -11,7 +11,7 @@ async function runCI() {
 
     try{
 
-        const { GITHUB_PROJECT, GITHUB_REPO, GITHUB_OWNER, GITHUB_BRANCH, GITHUB_SECRETS } = process.env;
+        const { COLLAB_PROJECT, COLLAB_REPO, COLLAB_OWNER, COLLAB_BRANCH, COLLAB_DRIVER } = process.env;
         let lastModify = '';
 
         console.log('----------Start download------------------');
@@ -47,7 +47,7 @@ async function runCI() {
         console.log('----------End compactSource------------------');
 
         console.log('----------Start callWork------------------');
-        await runCallWork(GITHUB_PROJECT, GITHUB_OWNER, lastModify);
+        await runCallWork(COLLAB_PROJECT, COLLAB_OWNER, COLLAB_DRIVER, lastModify);
         console.log('----------End callWork------------------');
 
 
