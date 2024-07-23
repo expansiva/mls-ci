@@ -6,6 +6,7 @@ const { runCompact } = require('./compact');
 const { runCreateTsconfig } = require('./createTsConfig');
 const { runCompactSource } = require('./compactSource');
 const { runCallWork } = require('./callWork');
+const { runGetOrgName } = require('./getOrgName');
 
 async function runCI() {
 
@@ -13,6 +14,11 @@ async function runCI() {
 
         const { COLLAB_PROJECT, COLLAB_REPO, COLLAB_OWNER, COLLAB_BRANCH, COLLAB_DRIVER } = process.env;
         let lastModify = '';
+        let orgNameInCollab = '';
+
+        console.log('----------Start getOrgName------------------');
+        orgNameInCollab = await runGetOrgName();
+        console.log('----------End getOrgName------------------');
 
         console.log('----------Start download------------------');
         await runDownload();
@@ -47,7 +53,7 @@ async function runCI() {
         console.log('----------End compactSource------------------');
 
         console.log('----------Start callWork------------------');
-        await runCallWork(COLLAB_PROJECT, COLLAB_OWNER, COLLAB_DRIVER, lastModify);
+        await runCallWork(COLLAB_PROJECT, orgNameInCollab, COLLAB_DRIVER, lastModify);
         console.log('----------End callWork------------------');
 
 
