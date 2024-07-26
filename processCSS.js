@@ -120,7 +120,8 @@ async function compileFiles(infoDS, globalcss, arrayTokens) {
                 if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
                 const nameComponent = dirent.name.replace(/_/g, '-');
                 const pathComponent = infoDS.path + '/components/' + nameComponent.replace('.js', '') + '/styles';
-                if(!directoryExists(pathComponent)) continue;
+                const fileExist = await directoryExists(pathComponent);
+                if(!fileExist) continue;
                 const content = await getStylesComponents(pathComponent);
                 const allLess = [globalcss, content].join('\n');
                 const newLess = replaceTokens(allLess, arrayTokens);
