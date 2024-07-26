@@ -7,6 +7,7 @@ const { runCreateTsconfig } = require('./createTsConfig');
 const { runCompactSource } = require('./compactSource');
 const { runCallWork } = require('./callWork');
 const { runGetOrgName } = require('./getOrgName');
+const { runProcessCss } = require('./processCSS');
 
 async function runCI() {
 
@@ -35,6 +36,10 @@ async function runCI() {
         console.log('----------Start compileTs------------------');
         await runCompileTs();
         console.log('----------End compileTs------------------');
+
+        console.log('----------Start processCSS------------------');
+        await runProcessCss();
+        console.log('----------End processCSS------------------');
 
         console.log('----------Start compileTs Definition------------------');
         await runCompileTs(true);
