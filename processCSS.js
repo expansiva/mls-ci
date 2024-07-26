@@ -120,6 +120,7 @@ async function compileFiles(infoDS, globalcss, arrayTokens) {
                 if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
                 const nameComponent = dirent.name.replace(/_/g, '-');
                 const pathComponent = infoDS.path + '/components/' + nameComponent.replace('.js', '') + '/styles';
+                if(!directoryExists(pathComponent)) continue;
                 const content = await getStylesComponents(pathComponent);
                 const allLess = [globalcss, content].join('\n');
                 const newLess = replaceTokens(allLess, arrayTokens);
@@ -138,6 +139,15 @@ async function compileFiles(infoDS, globalcss, arrayTokens) {
 
     }
 
+}
+
+async function directoryExists(directoryPath) {
+    try {
+        await fs.promises.access(directoryPath, fs.constants.F_OK);
+        return true;
+    } catch (error) {
+        return false;
+    }
 }
 
 function getCssWithoutTag(css, tag) {
