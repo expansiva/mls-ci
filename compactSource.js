@@ -8,7 +8,7 @@ async function runCompactSource() {
     // Caminho do root do projeto
     const rootDir = process.cwd();
     const out = path.join(rootDir, 'obj/source.zip');
-    const folders = ['l2'];
+    const folders = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7'];
 
     const zip = new AdmZip();
 
