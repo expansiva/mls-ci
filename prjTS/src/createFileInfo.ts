@@ -87,7 +87,7 @@ export async function runCreateFileInfo() {
         const lastModify = new Date();
 
         const js = {
-            lastModify: lastModify.toISOString(),
+            lastModified: lastModify.toISOString(),
             files: fileInfos
         }
 
