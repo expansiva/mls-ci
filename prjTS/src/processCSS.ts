@@ -213,30 +213,34 @@ function replaceTokens(lessContent:string, tokens:any[]) {
 
     let newLess = lessContent;
 
-    tokens.forEach((token) => {
+    const thema = tokens[0];
+    
+    const allTokens = {...thema.color, ...thema.typography, ...thema.global };
+    Object.keys(allTokens).forEach((key)=>{
 
-        const variableName = `@${token.key};`;
+
+        const variableName = `@${key};`;
         const escapedVariableName = getEscapedVariable(variableName);
         const pattern = new RegExp(escapedVariableName, 'g');
-        const replacement = `var(--${token.key});`;
+        const replacement = `var(--${key});`;
         newLess = newLess.replace(pattern, replacement);
 
-        const variableName2 = `@${token.key},`;
+        const variableName2 = `@${key},`;
         const escapedVariableName2 = getEscapedVariable(variableName2);
         const pattern2 = new RegExp(escapedVariableName2, 'g');
-        const replacement2 = `var(--${token.key}),`;
+        const replacement2 = `var(--${key}),`;
         newLess = newLess.replace(pattern2, replacement2);
 
-        const variableName3 = `(@${token.key}`;
+        const variableName3 = `(@${key}`;
         const escapedVariableName3 = getEscapedVariable(variableName3);
         const pattern3 = new RegExp(escapedVariableName3, 'g');
-        const replacement3 = `(var(--${token.key})`;
+        const replacement3 = `(var(--${key})`;
         newLess = newLess.replace(pattern3, replacement3);
 
-        const variableName4 = `@${token.key} `;
+        const variableName4 = `@${key} `;
         const escapedVariableName4 = getEscapedVariable(variableName4);
         const pattern4 = new RegExp(escapedVariableName4, 'g');
-        const replacement4 = `var(--${token.key}) `;
+        const replacement4 = `var(--${key}) `;
         newLess = newLess.replace(pattern4, replacement4);
     });
 
