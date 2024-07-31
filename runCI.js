@@ -18,47 +18,47 @@ async function runCI() {
         let orgNameInCollab = '';
 
         console.log('----------Start getOrgName------------------');
-        orgNameInCollab = await runGetOrgName();
+        //orgNameInCollab = await runGetOrgName();
         console.log('----------End getOrgName------------------');
 
         console.log('----------Start download------------------');
-        await runDownload();
+        //await runDownload();
         console.log('----------End download------------------');
 
         console.log('----------Start createTsConfig------------------');
-        await runCreateTsconfig();
+        //await runCreateTsconfig();
         console.log('----------End createTsConfig------------------');
 
         console.log('----------Start preCompile------------------');
-        await runPreCompile();
+        //await runPreCompile();
         console.log('----------End preCompile------------------');
 
         console.log('----------Start compileTs------------------');
-        await runCompileTs();
+        //await runCompileTs();
         console.log('----------End compileTs------------------');
 
         console.log('----------Start processCSS------------------');
-        await runProcessCss();
+        //await runProcessCss();
         console.log('----------End processCSS------------------');
 
         console.log('----------Start compileTs Definition------------------');
-        await runCompileTs(true);
+        //await runCompileTs(true);
         console.log('----------End compileTs Definition------------------');
 
         console.log('----------Start createFileInfo------------------');
-        lastModify = await runCreateFileInfo();
+        //lastModify = await runCreateFileInfo();
         console.log('----------End createFileInfo------------------');
 
         console.log('----------Start compact------------------');
-        await runCompact();
+        //await runCompact();
         console.log('----------End compact------------------');
 
         console.log('----------Start compactSource------------------');
-        await runCompactSource();
+        //await runCompactSource();
         console.log('----------End compactSource------------------');
 
         console.log('----------Start callWork------------------');
-        await runCallWork(COLLAB_PROJECT, orgNameInCollab, COLLAB_DRIVER, lastModify);
+        //await runCallWork(COLLAB_PROJECT, orgNameInCollab, COLLAB_DRIVER, lastModify);
         console.log('----------End callWork------------------');
 
 
