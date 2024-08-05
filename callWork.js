@@ -37,6 +37,7 @@ async function runCallWork(project, orgName, driver, lastModify) {
 
     } catch (e) {
         console.log(e.message)
+        throw new Error(`HTTP error:${e.message}`);
     }
 
 }

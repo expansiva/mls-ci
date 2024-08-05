@@ -37,6 +37,7 @@ export async function runCallWork(project:number, orgName:string, driver:string,
 
     } catch (e:any) {
         console.log(e.message)
+        throw new Error(`HTTP error:${e.message}`);
     }
 
 }
