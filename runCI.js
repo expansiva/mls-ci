@@ -64,6 +64,7 @@ async function runCI() {
 
     }catch(e){
         console.log(e.message);
+        throw new Error(`Error:${e.message}`);
     }
     
 
