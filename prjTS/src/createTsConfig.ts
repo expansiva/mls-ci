@@ -39,7 +39,7 @@ export async function runCreateTsconfig() {
             noImplicitAny: false,
             strictNullChecks: false,
             declaration: true,
-            declarationMap: true,
+            declarationMap: false,
             emitDeclarationOnly: true,
             paths: paths,
             lib: [

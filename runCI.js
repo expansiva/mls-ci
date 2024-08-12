@@ -8,6 +8,7 @@ const { runCompactSource } = require('./compactSource');
 const { runCallWork } = require('./callWork');
 const { runGetOrgName } = require('./getOrgName');
 const { runProcessCss } = require('./processCSS');
+const { runCreateJsonImports } = require('./createJsonImports');
 
 async function runCI() {
 
@@ -48,6 +49,10 @@ async function runCI() {
         console.log('----------Start createFileInfo------------------');
         lastModify = await runCreateFileInfo();
         console.log('----------End createFileInfo------------------');
+
+        console.log('----------Start createJSONImports------------------');
+        await runCreateJsonImports();
+        console.log('----------End createJSONImports------------------');
 
         console.log('----------Start compact------------------');
         await runCompact();
