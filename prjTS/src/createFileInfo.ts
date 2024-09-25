@@ -17,8 +17,9 @@ async function getAllFiles(dirPath:string, arrayOfFiles:string[] = []) {
             console.log(`file: ${filePath} `);
             arrayOfFiles.push(filePath);
         } else if (stat.isFile() && ['package.json', 'README.md', 'readme.md', 'tsconfig.json'].includes(file)){
-            console.log(`file: ${filePath} `);
-            arrayOfFiles.push(filePath);
+            const f = path.join(dirPath, 'l0\\' + file);
+            console.log(`file: ${f} `);
+            arrayOfFiles.push(f);
         }
     }
 
@@ -74,11 +75,11 @@ export async function runCreateFileInfo() {
         let versionCompile = ""
         const fileInfos = await Promise.all(allFiles.map(async file => {
             const relativePath = path.relative(projectRoot, file);
-            const stat = await fs.promises.stat(file);
+            const stat = await fs.promises.stat(file.replace('l0\\', ''));
             let versionRef = "";
 
-            if (versionCompile === "") versionCompile = await getFileVersion(relativePath);
-            if (versionCompile !== "") versionRef = await getFileOID(versionCompile, relativePath)
+            if (versionCompile === "") versionCompile = await getFileVersion(relativePath.replace('l0\\', ''));
+            if (versionCompile !== "") versionRef = await getFileOID(versionCompile, relativePath.replace('l0\\', ''))
 
             return {
                 ShortPath: relativePath,
