@@ -16,6 +16,9 @@ async function getAllFiles(dirPath:string, arrayOfFiles:string[] = []) {
         } else if (stat.isFile() && (filePath.indexOf("\\l") >= 0 || filePath.indexOf("/l") >= 0)) {
             console.log(`file: ${filePath} `);
             arrayOfFiles.push(filePath);
+        } else if (stat.isFile() && ['package.json', 'README.md', 'readme.md', 'tsconfig.json'].includes(file)){
+            console.log(`file: ${filePath} `);
+            arrayOfFiles.push(filePath);
         }
     }
 
