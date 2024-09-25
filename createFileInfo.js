@@ -16,11 +16,11 @@ async function getAllFiles(dirPath, arrayOfFiles = []) {
         } else if (stat.isFile() && (filePath.indexOf("\\l") >= 0 || filePath.indexOf("/l") >= 0)) {
             console.log(`file: ${filePath} `);
             arrayOfFiles.push(filePath);
-        } else if (stat.isFile() && ['package.json', 'README.md', 'readme.md', 'tsconfig.json'].includes(file)){
+        } /*else if (stat.isFile() && ['package.json', 'README.md', 'readme.md', 'tsconfig.json'].includes(file)){
             const f = path.join(dirPath, 'l0\\' + file);
             console.log(`file: ${f} `);
             arrayOfFiles.push(f);
-        }
+        }*/
     }
 
     return arrayOfFiles;
