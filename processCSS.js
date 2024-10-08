@@ -162,11 +162,11 @@ async function compileFiles(infoDS, arrayTokens, project) {
                 if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
 
                 const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
-                const nameComponent = dirent.name.replace('_'+project+'_', '');
+                const nameComponent = dirent.name.replace('_' + project + '_', '');
                 const pathComponent = projectRoot + '/l2/' + nameComponent.replace('.js', '.less');
                 console.info('file less: ' + pathComponent);
                 const fileExist = await directoryExists(pathComponent);
-                if(!fileExist) continue;
+                if (!fileExist) continue;
                 const content = await getStylesComponents(pathComponent);
                 const allLess = content;
                 const newLess = replaceTokens(allLess, arrayTokens);
@@ -230,7 +230,7 @@ async function getStylesComponents(pathFile) {
 
     try {
 
-        let content = '';
+        /*let content = '';
         const dir = await fs.promises.opendir(pathFile);
         // Loop for await para iterar sobre todos os itens no diretório
         for await (const dirent of dir) {
@@ -240,7 +240,12 @@ async function getStylesComponents(pathFile) {
                 const fileContent = await fs.promises.readFile(filePath, 'utf8');
                 content += fileContent + '\n';
             }
-        }
+        }*/
+
+        let content = '';
+
+        const fileContent = await fs.promises.readFile(pathFile, 'utf8');
+        content += fileContent + '\n';
 
         return content
 
@@ -258,8 +263,8 @@ function replaceTokens(lessContent, tokens) {
 
     const thema = tokens[0];
 
-    const allTokens = {...thema.color, ...thema.typography, ...thema.global };
-    Object.keys(allTokens).forEach((key)=>{
+    const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
+    Object.keys(allTokens).forEach((key) => {
 
 
         const variableName = `@${key};`;
@@ -308,11 +313,11 @@ async function runProcessCss(project) {
         await compileFiles(infoDS, lessGlobal, tokens);*/
 
         const infoDS = await getPathDS();
-        if(!infoDS) return;
+        if (!infoDS) return;
         const dsJson = await getDSJson(infoDS);
-        if(!dsJson) return;
+        if (!dsJson) return;
         const tokens = dsJson.tokens.items ? dsJson.tokens.items : [];
-        await compileFiles(infoDS,  tokens, project);
+        await compileFiles(infoDS, tokens, project);
 
 
     } catch (err) {

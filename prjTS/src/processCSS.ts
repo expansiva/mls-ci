@@ -6,7 +6,7 @@ const rootDir = process.cwd();
 const MLS_GETDEFAULTDESIGNSYSTEM = '[[mls_getDefaultDesignSystem]]';
 
 // Função para compilar e minificar o arquivo LESS e obter o conteúdo CSS
-async function compileAndMinifyLess(lessContent:string) {
+async function compileAndMinifyLess(lessContent: string) {
     try {
 
         const output = await less.render(lessContent, { compress: true });
@@ -34,7 +34,7 @@ async function getPathDS() {
 
         return { path: path2, name: dir };
 
-    } catch (err:any) {
+    } catch (err: any) {
 
         console.log('Erro getPathDS :' + err.message)
         return undefined;
@@ -43,13 +43,13 @@ async function getPathDS() {
 
 }
 
-async function getFirstSubdirectory(dirPath:string) {
+async function getFirstSubdirectory(dirPath: string) {
     try {
         // Lê o conteúdo do diretório
         const files = await fs.promises.readdir(dirPath, { withFileTypes: true });
 
         // Filtra apenas os subdiretórios
-        const subdirectories = files.filter((file:any) => file.isDirectory()).map((dir:any) => dir.name);
+        const subdirectories = files.filter((file: any) => file.isDirectory()).map((dir: any) => dir.name);
 
         // Retorna o nome do primeiro subdiretório
         if (subdirectories.length > 0) {
@@ -64,7 +64,7 @@ async function getFirstSubdirectory(dirPath:string) {
 }
 
 
-async function getDSJson(infoDS:any) {
+async function getDSJson(infoDS: any) {
     try {
 
         // Caminho do root do projeto
@@ -77,7 +77,7 @@ async function getDSJson(infoDS:any) {
 
         return jsonDS;
 
-    } catch (err:any) {
+    } catch (err: any) {
 
         console.log('Erro getDSJson :' + err.message);
         return undefined;
@@ -86,7 +86,7 @@ async function getDSJson(infoDS:any) {
 
 }
 
-async function getLessGlobal(infoDS:any, name:string) {
+async function getLessGlobal(infoDS: any, name: string) {
     try {
 
         // Caminho do root do projeto
@@ -96,7 +96,7 @@ async function getLessGlobal(infoDS:any, name:string) {
 
         return data;
 
-    } catch (err:any) {
+    } catch (err: any) {
 
         throw new Error('Erro getLessGlobal :' + err.message)
 
@@ -162,11 +162,11 @@ async function compileFiles(infoDS, arrayTokens, project) {
                 if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
 
                 const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
-                const nameComponent = dirent.name.replace('_'+project+'_', '');
+                const nameComponent = dirent.name.replace('_' + project + '_', '');
                 const pathComponent = projectRoot + '/l2/' + nameComponent.replace('.js', '.less');
                 console.info('file less: ' + pathComponent);
                 const fileExist = await directoryExists(pathComponent);
-                if(!fileExist) continue;
+                if (!fileExist) continue;
                 const content = await getStylesComponents(pathComponent);
                 const allLess = content;
                 const newLess = replaceTokens(allLess, arrayTokens);
@@ -188,7 +188,7 @@ async function compileFiles(infoDS, arrayTokens, project) {
 }
 
 
-async function directoryExists(directoryPath:string) {
+async function directoryExists(directoryPath: string) {
     try {
         await fs.promises.access(directoryPath, fs.constants.F_OK);
         return true;
@@ -197,7 +197,7 @@ async function directoryExists(directoryPath:string) {
     }
 }
 
-function getCssWithoutTag(css:string, tag:string) {
+function getCssWithoutTag(css: string, tag: string) {
     const originalString = css;
     const regex = /(\w+-\d+)\.(\w+)\s+/;
     let modifiedString = originalString.replace(regex, ':host(.$2) ');
@@ -209,12 +209,12 @@ function getCssWithoutTag(css:string, tag:string) {
     return modifiedString;
 }
 
-function replaceBackTicks(originalString:string) {
+function replaceBackTicks(originalString: string) {
     const stringWithSingleQuotes = originalString.replace(/`/g, "'");
     return stringWithSingleQuotes;
 }
 
-function convertFileNameToTag(widget:string) {
+function convertFileNameToTag(widget: string) {
     const regex = /_([0-9]+)_?(.*)/;
     const match = widget.match(regex);
     if (match) {
@@ -227,11 +227,11 @@ function convertFileNameToTag(widget:string) {
     return widget;
 }
 
-async function getStylesComponents(pathFile:string) {
+async function getStylesComponents(pathFile: string) {
 
     try {
 
-        let content = '';
+        /*let content = '';
         const dir = await fs.promises.opendir(pathFile);
         // Loop for await para iterar sobre todos os itens no diretório
         for await (const dirent of dir) {
@@ -241,11 +241,17 @@ async function getStylesComponents(pathFile:string) {
                 const fileContent = await fs.promises.readFile(filePath, 'utf8');
                 content += fileContent + '\n';
             }
-        }
+        }*/
+
+        let content = '';
+
+        const fileContent = await fs.promises.readFile(pathFile, 'utf8');
+        content += fileContent + '\n';
+
 
         return content
 
-    } catch (err:any) {
+    } catch (err: any) {
 
         throw new Error('Erro getStylesComponents :' + err.message)
 
@@ -253,14 +259,14 @@ async function getStylesComponents(pathFile:string) {
 
 }
 
-function replaceTokens(lessContent:string, tokens:any[]) {
+function replaceTokens(lessContent: string, tokens: any[]) {
 
     let newLess = lessContent;
 
     const thema = tokens[0];
-    
-    const allTokens = {...thema.color, ...thema.typography, ...thema.global };
-    Object.keys(allTokens).forEach((key)=>{
+
+    const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
+    Object.keys(allTokens).forEach((key) => {
 
 
         const variableName = `@${key};`;
@@ -291,11 +297,11 @@ function replaceTokens(lessContent:string, tokens:any[]) {
     return newLess;
 }
 
-function getEscapedVariable(variableName:string) {
+function getEscapedVariable(variableName: string) {
     return variableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export async function runProcessCss(project:string) {
+export async function runProcessCss(project: string) {
 
     try {
 
@@ -309,14 +315,14 @@ export async function runProcessCss(project:string) {
         await compileFiles(infoDS, lessGlobal, tokens);*/
 
         const infoDS = await getPathDS();
-        if(!infoDS) return;
+        if (!infoDS) return;
         const dsJson = await getDSJson(infoDS);
-        if(!dsJson) return;
+        if (!dsJson) return;
         const tokens = dsJson.tokens.items ? dsJson.tokens.items : [];
-        await compileFiles(infoDS,  tokens, project);
+        await compileFiles(infoDS, tokens, project);
 
 
-    } catch (err:any) {
+    } catch (err: any) {
 
         throw new Error('Erro getArrayTokens :' + err.message)
 
