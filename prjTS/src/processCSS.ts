@@ -104,7 +104,7 @@ async function getLessGlobal(infoDS:any, name:string) {
 
 }
 
-async function compileFiles(infoDS:any, globalcss:string, arrayTokens:[]) {
+/*async function compileFiles(infoDS:any, globalcss:string, arrayTokens:[]) {
 
     try {
 
@@ -137,6 +137,49 @@ async function compileFiles(infoDS:any, globalcss:string, arrayTokens:[]) {
         }
 
     } catch (err:any) {
+
+        throw new Error('Erro compileFiles :' + err.message)
+
+    }
+
+}*/
+
+async function compileFiles(infoDS, arrayTokens) {
+
+    try {
+
+        // Caminho do root do projeto
+
+        const pathFiles = path.join(rootDir, 'preBuild/l2');
+        const dir = await fs.promises.opendir(pathFiles);
+
+        // Loop for await para iterar sobre todos os itens no diretório
+        for await (const dirent of dir) {
+            if (dirent.isFile()) {
+
+                const filePath = path.join(pathFiles, dirent.name);
+                let fileContent = await fs.promises.readFile(filePath, 'utf8');
+                if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
+
+                const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
+                const nameComponent = dirent.name;
+                const pathComponent = projectRoot + '/l2/' + nameComponent.replace('.js', '.less');
+                console.info(pathComponent);
+                const fileExist = await directoryExists(pathComponent);
+                if(!fileExist) continue;
+                const content = await getStylesComponents(pathComponent);
+                const allLess = content;
+                const newLess = replaceTokens(allLess, arrayTokens);
+                let retCSS = await compileAndMinifyLess(newLess);
+                const tag = convertFileNameToTag(dirent.name.replace('.js', ''));
+                retCSS = getCssWithoutTag(retCSS, tag);
+                fileContent = fileContent.replace(MLS_GETDEFAULTDESIGNSYSTEM, retCSS);
+                await fs.promises.writeFile(filePath, fileContent, 'utf8');
+
+            }
+        }
+
+    } catch (err) {
 
         throw new Error('Erro compileFiles :' + err.message)
 
@@ -255,14 +298,21 @@ export async function runProcessCss() {
 
     try {
 
-        const infoDS = await getPathDS();
+        /* const infoDS = await getPathDS();
         if(!infoDS) return;
         const dsJson = await getDSJson(infoDS);
         if(!dsJson) return;
         const tokens = dsJson.tokens.items ? dsJson.tokens.items : [];
         const styleGlobalName = dsJson.css.items.length > 0 ? dsJson.css.items[0].name : '';
         const lessGlobal = await getLessGlobal(infoDS, styleGlobalName);
-        await compileFiles(infoDS, lessGlobal, tokens);
+        await compileFiles(infoDS, lessGlobal, tokens);*/
+
+        const infoDS = await getPathDS();
+        if(!infoDS) return;
+        const dsJson = await getDSJson(infoDS);
+        if(!dsJson) return;
+        const tokens = dsJson.tokens.items ? dsJson.tokens.items : [];
+        await compileFiles(infoDS,  tokens);
 
 
     } catch (err:any) {
