@@ -144,7 +144,7 @@ async function getLessGlobal(infoDS:any, name:string) {
 
 }*/
 
-async function compileFiles(infoDS, arrayTokens) {
+async function compileFiles(infoDS, arrayTokens, project) {
 
     try {
 
@@ -162,9 +162,9 @@ async function compileFiles(infoDS, arrayTokens) {
                 if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
 
                 const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
-                const nameComponent = dirent.name;
+                const nameComponent = dirent.name.replace('_'+project+'_', '');
                 const pathComponent = projectRoot + '/l2/' + nameComponent.replace('.js', '.less');
-                console.info(pathComponent);
+                console.info('file less: ' + pathComponent);
                 const fileExist = await directoryExists(pathComponent);
                 if(!fileExist) continue;
                 const content = await getStylesComponents(pathComponent);
@@ -186,6 +186,7 @@ async function compileFiles(infoDS, arrayTokens) {
     }
 
 }
+
 
 async function directoryExists(directoryPath:string) {
     try {
@@ -294,7 +295,7 @@ function getEscapedVariable(variableName:string) {
     return variableName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-export async function runProcessCss() {
+export async function runProcessCss(project:string) {
 
     try {
 
@@ -312,7 +313,7 @@ export async function runProcessCss() {
         const dsJson = await getDSJson(infoDS);
         if(!dsJson) return;
         const tokens = dsJson.tokens.items ? dsJson.tokens.items : [];
-        await compileFiles(infoDS,  tokens);
+        await compileFiles(infoDS,  tokens, project);
 
 
     } catch (err:any) {
