@@ -191,6 +191,66 @@ async function compileFiles(infoDS, arrayTokens, project) {
 
 }
 
+async function addCssWithOutShadowRoot(code, css){
+
+    try {
+
+        const lineToAdd = `this.loadStyle(\`${css}\`);`
+        const lines = code.split('\n');
+        let insideClass = false;
+        let constructorIndex = -1;
+        let superIndex = -1;
+        let lineAlreadyExists = false;
+
+        for (let i = 0; i < lines.length; i++) {
+            const trimmedLine = lines[i].trim();
+
+            if (trimmedLine.includes('class ') && trimmedLine.includes(' extends ')) {
+                insideClass = true;
+            }
+
+            if (insideClass && trimmedLine.startsWith('constructor(')) {
+                constructorIndex = i;
+
+                for (let j = constructorIndex + 1; j < lines.length; j++) {
+                    if (lines[j].trim().startsWith('super(')) {
+                        superIndex = j;
+        
+                        if (lines[j + 1] && lines[j + 1].trim() === lineToAdd.trim()) {
+                            lineAlreadyExists = true;
+                        }
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+        }
+
+        if (constructorIndex !== -1) {
+            if (!lineAlreadyExists) {
+                lines.splice(superIndex + 1, 0, `        ${lineToAdd}`);
+            }
+        } else {
+            for (let i = 0; i < lines.length; i++) {
+                if (lines[i].trim().startsWith('class ') && lines[i].includes(' extends ')) {
+                    lines.splice(i + 1, 0, `    constructor() {`, `        super();`, `        ${lineToAdd}`, `    }`);
+                    break;
+                }
+            }
+        }
+
+        return lines.join('\n');
+
+    } catch (err) {
+
+        throw new Error('Erro addCssWithOutShadowRoot :' + err.message)
+
+    }
+
+}
+
 
 async function directoryExists(directoryPath: string) {
     try {
