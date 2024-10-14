@@ -159,21 +159,25 @@ async function compileFiles(infoDS, arrayTokens, project) {
 
                 const filePath = path.join(pathFiles, dirent.name);
                 let fileContent = await fs.promises.readFile(filePath, 'utf8');
-                if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0) continue;
-
                 const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
-                const nameComponent = dirent.name.replace('_' + project + '_', '');
+                const nameComponent = dirent.name.replace('_'+project+'_', '');
                 const pathComponent = projectRoot + '/l2/' + nameComponent.replace('.js', '.less');
-                console.info('file less: ' + pathComponent);
+                console.log(pathComponent);
                 const fileExist = await directoryExists(pathComponent);
-                if (!fileExist) continue;
+                if(!fileExist) continue;
                 const content = await getStylesComponents(pathComponent);
                 const allLess = content;
                 const newLess = replaceTokens(allLess, arrayTokens);
                 let retCSS = await compileAndMinifyLess(newLess);
-                const tag = convertFileNameToTag(dirent.name.replace('.js', ''));
-                retCSS = getCssWithoutTag(retCSS, tag);
-                fileContent = fileContent.replace(MLS_GETDEFAULTDESIGNSYSTEM, retCSS);
+   
+                if (fileContent.indexOf(MLS_GETDEFAULTDESIGNSYSTEM) < 0){ 
+                    fileContent = await addCssWithOutShadowRoot(fileContent, retCSS);
+                }else{
+                    const tag = convertFileNameToTag(dirent.name.replace('.js', ''));
+                    retCSS = getCssWithoutTag(retCSS, tag);
+                    fileContent = fileContent.replace(MLS_GETDEFAULTDESIGNSYSTEM, retCSS);
+                }
+                
                 await fs.promises.writeFile(filePath, fileContent, 'utf8');
 
             }
@@ -229,18 +233,6 @@ function convertFileNameToTag(widget) {
 async function getStylesComponents(pathFile) {
 
     try {
-
-        /*let content = '';
-        const dir = await fs.promises.opendir(pathFile);
-        // Loop for await para iterar sobre todos os itens no diretório
-        for await (const dirent of dir) {
-            if (dirent.isFile()) {
-
-                const filePath = path.join(pathFile, dirent.name);
-                const fileContent = await fs.promises.readFile(filePath, 'utf8');
-                content += fileContent + '\n';
-            }
-        }*/
 
         let content = '';
 
