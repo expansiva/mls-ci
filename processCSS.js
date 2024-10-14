@@ -195,7 +195,7 @@ async function addCssWithOutShadowRoot(code, css){
 
     try {
 
-        const lineToAdd = `this.loadStyle(\`${css}\`);`
+        const lineToAdd = `if(this.loadStyle) this.loadStyle(\`${css}\`);`
         const lines = code.split('\n');
         let insideClass = false;
         let constructorIndex = -1;
