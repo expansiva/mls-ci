@@ -157,7 +157,10 @@ async function compileFiles(infoDS, arrayTokens, project) {
         for await (const dirent of dir) {
             if (dirent.isFile()) {
 
+                if(dirent.name.indexOf('_100554_processCssLit') >= 0) continue;
+
                 const filePath = path.join(pathFiles, dirent.name);
+                
                 let fileContent = await fs.promises.readFile(filePath, 'utf8');
                 const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
                 const nameComponent = dirent.name.replace('_'+project+'_', '');
