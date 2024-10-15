@@ -237,7 +237,7 @@ async function addCssWithOutShadowRoot(code, css){
             }
         } else {
             for (let i = 0; i < lines.length; i++) {
-                if (lines[i].trim().startsWith('class ') && lines[i].includes(' extends ')) {
+                if (lines[i].trim().includes('class ') && lines[i].includes(' extends ')) {
                     lines.splice(i + 1, 0, `    constructor() {`, `        super();`, `        ${lineToAdd}`, `    }`);
                     break;
                 }
