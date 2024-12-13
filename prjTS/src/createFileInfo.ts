@@ -77,7 +77,7 @@ function getDateCommit(filePath) {
         });
     });
 }
-
+ 
 function configDateLastModifyFiles(files) {
 
     const objVerify = [];

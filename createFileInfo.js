@@ -76,7 +76,7 @@ function getDateCommit(filePath) {
             resolve(stdout.trim());
         });
     });
-}
+} 
 
 function configDateLastModifyFiles(files) {
 
