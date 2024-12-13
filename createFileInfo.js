@@ -95,6 +95,7 @@ function configDateLastModifyFiles(files) {
 
         const f = files.find((iff) => iff.ShortPath.indexOf(conter) >=0);
         if(!f) return;
+        console.log(`item:${item.ShortPath}, ${item.jsUpdated_at}  | f:${f.ShortPath}, ${f.jsUpdated_at}`)
         const data1 = new Date(item.jsUpdated_at);
         const data2 = new Date(f.jsUpdated_at);
 
