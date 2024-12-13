@@ -123,8 +123,8 @@ async function runCreateFileInfo() {
             let jsUpdated_at = "";
 
             if (versionCompile === "") versionCompile = await getFileVersion(relativePath.replace('l0/', ''));
-            if (versionCompile !== "") versionRef = await getFileOID(versionCompile, relativePath.replace('l0/', ''))
-                if (jsUpdated_at === "") jsUpdated_at = await getDateCommit(relativePath.replace('l0/', ''));
+            if (versionCompile !== "") versionRef = await getFileOID(versionCompile, relativePath.replace('l0/', ''));
+            if (jsUpdated_at === "") jsUpdated_at = await getDateCommit(relativePath.replace('l0/', ''));
 
             return {
                 ShortPath: relativePath,
