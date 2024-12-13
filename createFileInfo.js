@@ -66,6 +66,49 @@ function getFileOID(commit, filePath) {
     });
 }
 
+function getDateCommit(filePath) {
+    return new Promise((resolve, reject) => {
+        exec(`git log -1 --format="%aI" -- ${filePath}`, (err, stdout, stderr) => {
+            if (err) {
+                reject(`Error getting version for file ${filePath}: ${stderr}`);
+                return;
+            }
+            resolve(stdout.trim());
+        });
+    });
+}
+
+function configDateLastModifyFiles(files) {
+
+    const objVerify = [];
+
+    files.forEach((item) => {
+
+        if (!item.ShortPath.startsWith('l2') || item.ShortPath.indexOf('.html') >= 0) return;
+        const parts = item.ShortPath.split(/\\|\//); 
+        const namewithext = parts[parts.length - 1]; 
+        const name = namewithext.split('.')[0];
+        const ists = namewithext.indexOf('.ts') >= 0;
+        const conter = `${name}.${ists ? 'less' : 'ts'}`;
+
+        if(objVerify.includes(name)) return;
+
+        const f = files.find((iff) => iff.ShortPath.indexOf(conter) >=0);
+        if(!f) return;
+        const data1 = new Date(item.jsUpdated_at);
+        const data2 = new Date(f.jsUpdated_at);
+
+        if(data1 > data2) f.jsUpdated_at = item.jsUpdated_at
+        else if (data1 < data2) item.jsUpdated_at = f.jsUpdated_at;
+
+        objVerify.push(name);
+
+    });
+
+    return files;
+
+}
+
 async function runCreateFileInfo() {
 
     try {
@@ -73,22 +116,27 @@ async function runCreateFileInfo() {
         const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
         const allFiles = await getAllFiles(projectRoot);
         let versionCompile = ""
-        const fileInfos = await Promise.all(allFiles.map(async file => {
+        let fileInfos = await Promise.all(allFiles.map(async file => {
             const relativePath = path.relative(projectRoot, file);
             const stat = await fs.promises.stat(file.replace('l0/', ''));
             let versionRef = "";
+            let jsUpdated_at = "";
 
             if (versionCompile === "") versionCompile = await getFileVersion(relativePath.replace('l0/', ''));
             if (versionCompile !== "") versionRef = await getFileOID(versionCompile, relativePath.replace('l0/', ''))
+                if (jsUpdated_at === "") jsUpdated_at = await getDateCommit(relativePath.replace('l0/', ''));
 
             return {
                 ShortPath: relativePath,
                 versionRef,
-                Length: stat.size
+                Length: stat.size,
+                jsUpdated_at
             };
         }));
 
         const lastModify = new Date();
+
+        fileInfos = configDateLastModifyFiles(fileInfos);
 
         const js = {
             lastModified: lastModify.toISOString(),
