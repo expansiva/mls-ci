@@ -135,14 +135,15 @@ async function runCreateFileInfo() {
                 return i.file === relativePath.replace('l0/', '').replace(/\\/g, '/')
             });
             let versionRef =  f ? f.version : 'notfound';
-            let jsUpdated_at = await getDateCommit(relativePath.replace('l0/', ''));
+            let update_at = await getDateCommit(relativePath.replace('l0/', ''));
+            update_at = new Date(update_at).toISOString();
 
             fileInfos.push(
                 {
                     ShortPath: relativePath,
                     versionRef,
                     Length: stat.size,
-                    jsUpdated_at
+                    update_at
                 }
             )
 
@@ -150,7 +151,7 @@ async function runCreateFileInfo() {
         
         const lastModify = new Date();
 
-        fileInfos = configDateLastModifyFiles(fileInfos);
+        //fileInfos = configDateLastModifyFiles(fileInfos);
 
         const js = {
             lastModified: lastModify.toISOString(),
