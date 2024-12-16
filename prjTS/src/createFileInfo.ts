@@ -27,9 +27,9 @@ async function getAllFiles(dirPath:string, arrayOfFiles:string[] = []) {
 }
 
 // Função para obter a versão do arquivo usando 'git log -1'
-function getFileVersion(filePath:string) :Promise<string>{
+function getFileVersion() {
     return new Promise((resolve, reject) => {
-        exec(`git log -1 --pretty=format:%H -- ${filePath}`, (err, stdout, stderr) => {
+        exec(`git log -1 --pretty=format:"%H"`, (err, stdout, stderr) => {
             if (err) {
                 reject(`Error getting version for file ${filePath}: ${stderr}`);
                 return;
@@ -39,9 +39,9 @@ function getFileVersion(filePath:string) :Promise<string>{
     });
 }
 
-function getFileOID(commit:string, filePath:string):Promise<string> {
+function getFilesOID(commit) {
     return new Promise((resolve, reject) => {
-        const command = `git ls-tree --full-name -r ${commit} ${filePath}`;
+        const command = `git ls-tree --full-name -r ${commit}`;
         exec(command, (error, stdout, stderr) => {
             if (error) {
                 reject(`Error executing command: ${error.message}`);
@@ -52,16 +52,20 @@ function getFileOID(commit:string, filePath:string):Promise<string> {
                 return;
             }
             const lines = stdout.trim().split('\n');
-            if (lines.length === 0) {
-                reject(`File not found in commit`);
-                return;
-            }
-            const parts = lines[0].split(/\s+/);
-            if (parts.length < 3) {
-                reject(`Unexpected output format`);
-                return;
-            }
-            resolve(parts[2]); // OID está na terceira coluna
+            
+            const ret = [];
+            lines.forEach((l)=>{
+
+                const parts = l.split(" ");
+                const info = parts[2] ? parts[2].split(/\t/) : 'not found';
+
+                ret.push({
+                    file: info[1] ? info[1] : 'not found',
+                    version: info[0] ? info[0] : 'not found'
+                })
+
+            });
+            resolve(ret); 
         });
     });
 }
@@ -73,11 +77,12 @@ function getDateCommit(filePath) {
                 reject(`Error getting version for file ${filePath}: ${stderr}`);
                 return;
             }
+           console.log(`filePath:${filePath} stdout:${stdout}`);
             resolve(stdout.trim());
         });
     });
-}
- 
+} 
+
 function configDateLastModifyFiles(files) {
 
     const objVerify = [];
@@ -109,34 +114,44 @@ function configDateLastModifyFiles(files) {
 
 }
 
-export async function runCreateFileInfo() {
+async function runCreateFileInfo() {
 
     try {
 
         const projectRoot = path.join(__dirname, '../..'); // Ajuste conforme necessário
         const allFiles = await getAllFiles(projectRoot);
-        let versionCompile = ""
-        let fileInfos = await Promise.all(allFiles.map(async file => {
+        
+        const versionCompile = await getFileVersion();
+        const files = await getFilesOID(versionCompile);
+       
+        let fileInfos = [];
+
+        for await (file of allFiles) {
+
             const relativePath = path.relative(projectRoot, file);
             const stat = await fs.promises.stat(file.replace('l0/', ''));
-            let versionRef = "";
-            let jsUpdated_at = "";
+           
+            const f = files.find((i) => {
+                return i.file === relativePath.replace('l0/', '').replace(/\\/g, '/')
+            });
+            let versionRef =  f ? f.version : 'notfound';
+            let update_at = await getDateCommit(relativePath.replace('l0/', ''));
+            update_at = new Date(update_at).toISOString();
 
-            if (versionCompile === "") versionCompile = await getFileVersion(relativePath.replace('l0/', ''));
-            if (versionCompile !== "") versionRef = await getFileOID(versionCompile, relativePath.replace('l0/', ''))
-                if (jsUpdated_at === "") jsUpdated_at = await getDateCommit(relativePath.replace('l0/', ''));
+            fileInfos.push(
+                {
+                    ShortPath: relativePath,
+                    versionRef,
+                    Length: stat.size,
+                    update_at
+                }
+            )
 
-            return {
-                ShortPath: relativePath,
-                versionRef,
-                Length: stat.size,
-                jsUpdated_at
-            };
-        }));
-
+        }
+        
         const lastModify = new Date();
 
-        fileInfos = configDateLastModifyFiles(fileInfos);
+        //fileInfos = configDateLastModifyFiles(fileInfos);
 
         const js = {
             lastModified: lastModify.toISOString(),
