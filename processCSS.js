@@ -321,6 +321,11 @@ function replaceTokens(lessContent, tokens) {
     const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
     Object.keys(allTokens).forEach((key) => {
 
+        const variableName5 = `@${key}, `;
+        const escapedVariableName5 = getEscapedVariable(variableName5);
+        const pattern5 = new RegExp(`${escapedVariableName5}\\s*([^;]+);`, 'g');
+        const replacement5 = `var(--${key}, $1);`;
+        newLess = newLess.replace(pattern5, replacement5);
 
         const variableName = `@${key};`;
         const escapedVariableName = getEscapedVariable(variableName);
