@@ -66,7 +66,7 @@ async function runPreCompile() {
             await deleteAllFilesInDirectory(destDir)
         
             files.forEach(file => {
-                if (file.endsWith('.ts') && !file.endsWith('.test.ts')) {
+                if (file.endsWith('.ts')) {
                     const oldPath = path.join(srcDir, file);
                     const newPath = path.join(destDir, prefix + file);
                     fs.copyFile(oldPath, newPath, (err) => {
