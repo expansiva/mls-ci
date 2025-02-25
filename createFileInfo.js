@@ -89,7 +89,7 @@ function configDateLastModifyFiles(files) {
 
     files.forEach((item) => {
 
-        if (!item.ShortPath.startsWith('l2') || item.ShortPath.indexOf('.html') >= 0) return;
+        if (!item.ShortPath.startsWith('l2') || item.ShortPath.indexOf('.html') >= 0 || item.ShortPath.indexOf('.test.ts') >= 0) return;
         const parts = item.ShortPath.split(/\\|\//); 
         const namewithext = parts[parts.length - 1]; 
         const name = namewithext.split('.')[0];
