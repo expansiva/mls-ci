@@ -210,20 +210,27 @@ async function getStylesComponents(pathFile) {
 }
 
 function replaceTokens(lessContent, tokens) {
+    
+    const lessTokens = new Set(Object.keys(tokens));
 
-    if (tokens.length === 0) return lessContent;
-
-    const thema = tokens[0];
-    const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
-    const lessTokens = new Set(Object.keys(allTokens));
-    return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
+    return less.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
         if (!lessTokens.has(token)) {
             return match;
         }
+
         const beforeText = fullText.slice(0, offset);
         const insideMediaQuery = /@media\s*\([^{}]*$/.test(beforeText);
 
-        if (insideMediaQuery) {
+        const lessFunctions = [
+            "lighten", "darken", "saturate", "desaturate", "fadein", "fadeout", "fade",
+            "spin", "mix", "tint", "shade", "contrast", "ceil", "floor", "round", "abs",
+            "sqrt", "pow", "mod", "min", "max", "escape", "e", "unit", "convert",
+            "extract", "length"
+        ];
+
+        const insideLessFunction = new RegExp(`(${lessFunctions.join("|")})\\s*\\([^()]*$`, "i").test(beforeText);
+
+        if (insideMediaQuery || insideLessFunction) {
             return match;
         }
 
