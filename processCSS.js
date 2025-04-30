@@ -213,7 +213,7 @@ function replaceTokens(lessContent, tokens) {
     
     const lessTokens = new Set(Object.keys(tokens));
 
-    return less.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
+    return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
         if (!lessTokens.has(token)) {
             return match;
         }
