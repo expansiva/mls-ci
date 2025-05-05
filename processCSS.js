@@ -210,10 +210,14 @@ async function getStylesComponents(pathFile) {
 }
 
 function replaceTokens(lessContent, tokens) {
-    
-    const lessTokens = new Set(Object.keys(tokens));
 
-    return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
+     if (tokens.length === 0) return lessContent;
+ 
+     const thema = tokens[0];
+     const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
+     const lessTokens = new Set(Object.keys(allTokens));
+     return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
+
         if (!lessTokens.has(token)) {
             return match;
         }
