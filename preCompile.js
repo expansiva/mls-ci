@@ -59,8 +59,10 @@ async function runPreCompile() {
             fs.mkdirSync(destDir, { recursive: true });
         }
 
+        await deleteAllFilesInDirectory(destDir);
+        await copyTsFilesRecursively(srcDir, destDir, prefix);
 
-        fs.readdir(srcDir, async (err, files) => {
+        /*fs.readdir(srcDir, async (err, files) => {
             if (err) throw err;
         
             await deleteAllFilesInDirectory(destDir)
@@ -75,12 +77,30 @@ async function runPreCompile() {
                     });
                 }
             });
-        });
+        });*/
         
         
 
     } catch (error) {
         throw new Error('Erro runPreCompile:' + error.message)
+    }
+}
+
+async function copyTsFilesRecursively(srcDir, destDir, prefix) {
+    const entries = await fs.promises.readdir(srcDir, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const srcPath = path.join(srcDir, entry.name);
+        const destPath = path.join(destDir, entry.name);
+
+        if (entry.isDirectory()) {
+            await fs.promises.mkdir(destPath, { recursive: true });
+            await copyTsFilesRecursively(srcPath, destPath, prefix);
+        } else if (entry.name.endsWith('.ts')) {
+            const renamedDest = path.join(destDir, prefix + entry.name);
+            await fs.promises.copyFile(srcPath, renamedDest);
+            console.log(`Copied: ${srcPath} -> ${renamedDest}`);
+        }
     }
 }
 
