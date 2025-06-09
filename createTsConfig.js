@@ -22,13 +22,13 @@ async function runCreateTsconfig() {
     
     // Criar o novo conteúdo do tsconfig_d.json
     const tsconfigD = {
-        compilerOptions: {
-            target: "es2020",
-            module: "ES2020",
+            compilerOptions: {
+            target: "es2022",
+            module: "ES2022",
             esModuleInterop: true,
             outFile: "./preBuild/types/index.d.ts",
             rootDir: "./prel2",
-            strict: true,
+            strict: false,
             removeComments: false,
             noUnusedParameters: false,
             skipLibCheck: true,
@@ -42,6 +42,7 @@ async function runCreateTsconfig() {
             declarationMap: false,
             emitDeclarationOnly: true,
             paths: paths,
+            noEmitOnError: false,
             lib: [
                 "dom",
                 "ES2022"
