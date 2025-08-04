@@ -60,7 +60,7 @@ async function getTokensFileDesignSystem(project) {
 }
 
 
-async function compileFiles(arrayTokens, project) {
+/*async function compileFiles(arrayTokens, project) {
 
     try {
 
@@ -100,6 +100,52 @@ async function compileFiles(arrayTokens, project) {
 
     }
 
+}*/
+
+async function compileFiles(arrayTokens, project) {
+    try {
+        const pathFiles = path.join(rootDir, 'preBuild/l2');
+        await processDirectory(pathFiles, arrayTokens, project);
+    } catch (err) {
+        throw new Error('Erro compileFiles :' + err.message);
+    }
+}
+
+async function processDirectory(dirPath, arrayTokens, project) {
+    const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+        const fullPath = path.join(dirPath, entry.name);
+
+        if (entry.isDirectory()) {
+            // Chamada recursiva para subpastas
+            await processDirectory(fullPath, arrayTokens, project);
+        }
+
+        if (entry.isFile()) {
+            if (entry.name.indexOf('_100554_processCssLit') >= 0) continue;
+
+            let fileContent = await fs.promises.readFile(fullPath, 'utf8');
+            const projectRoot = path.join(__dirname, '../..');
+          
+            const relativeToL2 = path.relative(path.join(rootDir, 'preBuild/l2'), fullPath).replace('_' + project + '_', '');
+            const pathComponent = path.join(projectRoot, 'l2', relativeToL2.replace(/\.(ts|js)$/, '.less'));
+            console.log(pathComponent);
+            const fileExist = await directoryExists(pathComponent);
+            if (!fileExist) {
+                continue;
+            }
+
+            const content = await getStylesComponents(pathComponent);
+            const allLess = removeTokensFromSource(content);
+            const newLess = replaceTokens(allLess, arrayTokens);
+            const tokensLess = await getTokensLess(arrayTokens);
+            const joinLess = newLess + '\n\n' + tokensLess;
+            const retCSS = await compileAndMinifyLess(joinLess);
+            fileContent = await addCssWithOutShadowRoot(fileContent, retCSS);
+            await fs.promises.writeFile(fullPath, fileContent, 'utf8');
+        }
+    }
 }
 
 function removeTokensFromSource(src) {
@@ -133,10 +179,10 @@ async function addCssWithOutShadowRoot(code, css) {
 
         const lineToAdd = `if(this.loadStyle) this.loadStyle(\`${css}\`);`
         const lines = code.split('\n');
-        const lineMls = Array.from(lines).find((l) => l.startsWith('/// <mls ') && l.endsWith('/>'))
-        const hasEnhancementLit = lineMls ? lineMls.includes('_100554_enhancementLit'): false;
-        if(!hasEnhancementLit || !css) return code;
-        
+        const lineMls = Array.from(lines).find((l) => l.trim().startsWith('/// <mls ') && l.trim().endsWith('/>'))
+        const hasEnhancementLit = lineMls ? lineMls.includes('_100554_enhancementLit') : false;
+        if (!hasEnhancementLit || !css) return code;
+
         let insideClass = false;
         let constructorIndex = -1;
         let superIndex = -1;
@@ -167,7 +213,6 @@ async function addCssWithOutShadowRoot(code, css) {
             }
 
         }
-
         if (constructorIndex !== -1) {
             if (!lineAlreadyExists) {
                 lines.splice(superIndex + 1, 0, `        ${lineToAdd}`);
@@ -215,12 +260,12 @@ async function getStylesComponents(pathFile) {
 
 function replaceTokens(lessContent, tokens) {
 
-     if (tokens.length === 0) return lessContent;
- 
-     const thema = tokens[0];
-     const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
-     const lessTokens = new Set(Object.keys(allTokens));
-     return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
+    if (tokens.length === 0) return lessContent;
+
+    const thema = tokens[0];
+    const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
+    const lessTokens = new Set(Object.keys(allTokens));
+    return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
 
         if (!lessTokens.has(token)) {
             return match;
@@ -249,7 +294,7 @@ function replaceTokens(lessContent, tokens) {
 async function runProcessCss(project) {
 
     try {
-        
+
         const tokens = await getTokensFileDesignSystem(project)
         await compileFiles(tokens, project);
 
