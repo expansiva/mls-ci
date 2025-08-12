@@ -89,8 +89,8 @@ function configDateLastModifyFiles(files) {
 
     files.forEach((item) => {
 
-        if (!item.ShortPath.startsWith('l2') || item.ShortPath.indexOf('.html') >= 0 || item.ShortPath.indexOf('.test.ts') >= 0) return;
-        const parts = item.ShortPath.split(/\\|\//); 
+        if (!item.shortPath.startsWith('l2') || item.shortPath.indexOf('.html') >= 0 || item.shortPath.indexOf('.test.ts') >= 0) return;
+        const parts = item.shortPath.split(/\\|\//); 
         const namewithext = parts[parts.length - 1]; 
         const name = namewithext.split('.')[0];
         const ists = namewithext.indexOf('.ts') >= 0;
@@ -98,7 +98,7 @@ function configDateLastModifyFiles(files) {
 
         if(objVerify.includes(name)) return;
 
-        const f = files.find((iff) => iff.ShortPath.indexOf(conter) >=0);
+        const f = files.find((iff) => iff.shortPath.indexOf(conter) >=0);
         if(!f) return;
         const data1 = new Date(item.jsUpdated_at);
         const data2 = new Date(f.jsUpdated_at);
@@ -140,7 +140,7 @@ async function runCreateFileInfo() {
 
             fileInfos.push(
                 {
-                    ShortPath: relativePath,
+                    shortPath: relativePath,
                     versionRef,
                     Length: stat.size,
                     update_at
