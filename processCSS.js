@@ -139,7 +139,7 @@ async function processDirectory(dirPath, arrayTokens, project) {
             const content = await getStylesComponents(pathComponent);
             const allLess = removeTokensFromSource(content);
             const newLess = replaceTokens(allLess, arrayTokens);
-            const tokensLess = await getTokensLess(arrayTokens);
+            const tokensLess = await getTokensLess(arrayTokens, allLess);
             const joinLess = newLess + '\n\n' + tokensLess;
             const retCSS = await compileAndMinifyLess(joinLess);
             fileContent = await addCssWithOutShadowRoot(fileContent, retCSS);
@@ -153,12 +153,52 @@ function removeTokensFromSource(src) {
     return src.replace(regex, '');
 }
 
-async function getTokensLess(tokens) {
+function parseMlsString(input) {
+  // Pegar a primeira linha (antes da quebra de linha)
+  const firstLine = input.split("\n")[0].trim();
+
+  // Verificar se contém o tripleslash
+  if (!firstLine.startsWith("/// <mls")) {
+    return undefined;
+  }
+
+  // Regex para capturar os atributos
+  const regex = /(\w+)="([^"]*)"/g;
+  let match;
+  const result = {
+    shortName: undefined,
+    project: undefined,
+    enhancement: undefined,
+    folder: undefined,
+  };
+
+  while ((match = regex.exec(firstLine)) !== null) {
+    const [_, key, value] = match;
+    if (result.hasOwnProperty(key)) {
+      result[key] = value;
+    }
+  }
+
+  return result;
+}
+
+function getTokensByTheme(tokens, srcLess){
+
+    if (tokens.length === 0) return undefined;
+    const info = parseMlsString(srcLess);
+    if(!info) return undefined;
+    let index = tokens.filter(((tk) => tk.themeName === info.folder));
+    if(!index || index.length === 0) index = tokens;
+    return index[0];
+
+}
+
+async function getTokensLess(tokens, allLess) {
     // {"primary-color": '#red'}  => "@primary-color: red;"
 
     if (tokens.length === 0) return '';
-
-    const tokenByTheme = tokens[0];
+    
+    const tokenByTheme = getTokensByTheme(tokens, allLess);
 
     if (!tokenByTheme) throw new Error(`no find tokens default`);
     let tokensLess = '';
@@ -262,7 +302,7 @@ function replaceTokens(lessContent, tokens) {
 
     if (tokens.length === 0) return lessContent;
 
-    const thema = tokens[0];
+    const thema = getTokensByTheme(tokens, lessContent);
     const allTokens = { ...thema.color, ...thema.typography, ...thema.global };
     const lessTokens = new Set(Object.keys(allTokens));
     return lessContent.replace(/@([a-zA-Z0-9-_]+)/g, (match, token, offset, fullText) => {
