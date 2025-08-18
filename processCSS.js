@@ -186,7 +186,7 @@ function getTokensByTheme(tokens, srcLess){
 
     if (tokens.length === 0) return undefined;
     const info = parseMlsString(srcLess);
-    if(!info) return undefined;
+    if(!info) return tokens[0];
     let index = tokens.filter(((tk) => tk.themeName === info.folder));
     if(!index || index.length === 0) index = tokens;
     return index[0];
