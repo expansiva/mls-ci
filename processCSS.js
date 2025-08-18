@@ -203,6 +203,8 @@ async function getTokensLess(tokens, allLess) {
     if (!tokenByTheme) throw new Error(`no find tokens default`);
     let tokensLess = '';
 
+    if(!tokenByTheme.color) return '';
+
     tokensLess += Object.keys(tokenByTheme.color).map((key) => {
         let token = '';
         if (!key.startsWith('_dark-')) token = `@${key}: ${tokenByTheme.color[key]};`
