@@ -10,7 +10,7 @@ async function getAllFiles(dirPath, arrayOfFiles = []) {
         const filePath = path.join(dirPath, file);
         const stat = await fs.promises.stat(filePath);
 
-        if (stat.isDirectory() && !['node_modules', 'prel2', 'preBuild', '.git', '.github', 'build', 'dist', 'mls-ci'].includes(file)) {
+        if (stat.isDirectory() && !['node_modules', 'prel2', 'project', 'preBuild', '.git', '.github', 'build', 'dist', 'mls-ci'].includes(file)) {
 
             await getAllFiles(filePath, arrayOfFiles);
         } else if (stat.isFile() && (filePath.indexOf("\\l") >= 0 || filePath.indexOf("/l") >= 0)) {

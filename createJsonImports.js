@@ -48,7 +48,7 @@ async function runCreateJsonImports() {
 
         const prj = await getProjectName();
         const rootDir = process.cwd();
-        const dirPath = path.join(rootDir, 'prel2');
+        const dirPath = path.join(rootDir, `project/_${prj}_/l2`);
         const files = await fs.promises.readdir(dirPath);
         const tsFiles = files.filter(file => file.endsWith('.ts'));
 

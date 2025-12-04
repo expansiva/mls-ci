@@ -47,7 +47,22 @@ async function runPreCompile() {
 
     try {
 
+        let prefix = await getProjectName();
+        prefix = `_${prefix}_`;
+        console.log('Get prj name:', prefix);
+
         const projectRoot = path.resolve(__dirname, '../..');
+        const srcDir = path.join(projectRoot, 'l2');
+        const destDir = path.join(projectRoot, 'project'+'/'+prefix+'/l2');
+
+        if (!fs.existsSync(destDir)) {
+            fs.mkdirSync(destDir, { recursive: true });
+        }
+
+        await deleteAllFilesInDirectory(destDir);
+        await copyTsFilesRecursively(srcDir, destDir, 'l2');
+
+        /*const projectRoot = path.resolve(__dirname, '../..');
         const srcDir = path.join(projectRoot, 'l2');
         const destDir = path.join(projectRoot, 'prel2');
 
@@ -60,26 +75,7 @@ async function runPreCompile() {
         }
 
         await deleteAllFilesInDirectory(destDir);
-        await copyTsFilesRecursively(srcDir, destDir, prefix);
-
-        /*fs.readdir(srcDir, async (err, files) => {
-            if (err) throw err;
-        
-            await deleteAllFilesInDirectory(destDir)
-        
-            files.forEach(file => {
-                if (file.endsWith('.ts')) {
-                    const oldPath = path.join(srcDir, file);
-                    const newPath = path.join(destDir, prefix + file);
-                    fs.copyFile(oldPath, newPath, (err) => {
-                        if (err) throw err;
-                        console.log(`Renamed: ${oldPath} -> ${newPath}`);
-                    });
-                }
-            });
-        });*/
-        
-        
+        await copyTsFilesRecursively(srcDir, destDir, prefix);*/
 
     } catch (error) {
         throw new Error('Erro runPreCompile:' + error.message)
@@ -97,7 +93,8 @@ async function copyTsFilesRecursively(srcDir, destDir, prefix) {
             await fs.promises.mkdir(destPath, { recursive: true });
             await copyTsFilesRecursively(srcPath, destPath, prefix);
         } else if (entry.name.endsWith('.ts')) {
-            const renamedDest = path.join(destDir, prefix + entry.name);
+            //const renamedDest = path.join(destDir, prefix + entry.name);
+            const renamedDest = path.join(destDir, entry.name);
             await fs.promises.copyFile(srcPath, renamedDest);
             console.log(`Copied: ${srcPath} -> ${renamedDest}`);
         }

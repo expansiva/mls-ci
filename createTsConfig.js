@@ -27,7 +27,7 @@ async function runCreateTsconfig() {
             module: "ES2022",
             esModuleInterop: true,
             outFile: "./preBuild/types/index.d.ts",
-            rootDir: "./prel2",
+            rootDir: "./project",
             strict: false,
             removeComments: false,
             noUnusedParameters: false,
@@ -49,7 +49,7 @@ async function runCreateTsconfig() {
             ]
         },
         include: [
-            "prel2/**/*",
+            "project/**/*",
             "monaco.d.ts",
             "mls.d.ts"
         ],

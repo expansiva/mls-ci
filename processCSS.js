@@ -48,7 +48,8 @@ async function getTokensFileDesignSystem(project) {
 
     const projectRoot = path.join(__dirname, '../..');
     const fileDsName = 'designSystem.js';
-    const pathComponent = path.join(projectRoot, `/preBuild/l2/_${project}_${fileDsName}`);
+    //const pathComponent = path.join(projectRoot, `/preBuild/l2/_${project}_${fileDsName}`);
+    const pathComponent = path.join(projectRoot, `/preBuild/_${project}_/l2/${fileDsName}`);
 
     try {
         const tokens = (await requireFromMemory(pathComponent)).tokens;
@@ -104,7 +105,8 @@ async function getTokensFileDesignSystem(project) {
 
 async function compileFiles(arrayTokens, project) {
     try {
-        const pathFiles = path.join(rootDir, 'preBuild/l2');
+        //const pathFiles = path.join(rootDir, 'preBuild/l2');
+        const pathFiles = path.join(rootDir, `preBuild/_${project}_/l2`);
         await processDirectory(pathFiles, arrayTokens, project);
     } catch (err) {
         throw new Error('Erro compileFiles :' + err.message);
@@ -123,14 +125,15 @@ async function processDirectory(dirPath, arrayTokens, project) {
         }
 
         if (entry.isFile()) {
-            if (entry.name.indexOf('_100554_processCssLit') >= 0) continue;
+            //if (entry.name.indexOf('_100554_processCssLit') >= 0) continue;
+            if (entry.name.indexOf('processCssLit') >= 0) continue;
 
             let fileContent = await fs.promises.readFile(fullPath, 'utf8');
             const projectRoot = path.join(__dirname, '../..');
           
-            const relativeToL2 = path.relative(path.join(rootDir, 'preBuild/l2'), fullPath).replace('_' + project + '_', '');
+            //const relativeToL2 = path.relative(path.join(rootDir, 'preBuild/l2'), fullPath).replace('_' + project + '_', '');
+            const relativeToL2 = path.relative(path.join(rootDir, `preBuild/_${project}_/l2`), fullPath);
             const pathComponent = path.join(projectRoot, 'l2', relativeToL2.replace(/\.(ts|js)$/, '.less'));
-            console.log(pathComponent);
             const fileExist = await directoryExists(pathComponent);
             if (!fileExist) {
                 continue;
@@ -143,6 +146,7 @@ async function processDirectory(dirPath, arrayTokens, project) {
             const joinLess = newLess + '\n\n' + tokensLess;
             const retCSS = await compileAndMinifyLess(joinLess);
             fileContent = await addCssWithOutShadowRoot(fileContent, retCSS);
+            console.log(`Processed CSS for file: ${fullPath}`);
             await fs.promises.writeFile(fullPath, fileContent, 'utf8');
         }
     }

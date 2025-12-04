@@ -1,6 +1,6 @@
 const { runDownload } = require('./download');
 const { runPreCompile } = require('./preCompile');
-const { runCompileTs } = require('./compileTs');
+const { runCompileTs, fixFileDefinition } = require('./compileTs');
 const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
 const { runCreateTsconfig } = require('./createTsConfig');
@@ -44,6 +44,7 @@ async function runCI() {
 
         console.log('----------Start compileTs Definition------------------');
         await runCompileTs(true);
+        await fixFileDefinition();
         console.log('----------End compileTs Definition------------------');
 
         console.log('----------Start createFileInfo------------------');
