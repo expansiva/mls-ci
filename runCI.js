@@ -1,6 +1,7 @@
 const { runDownload } = require('./download');
 const { runPreCompile } = require('./preCompile');
-const { runCompileTs, fixFileDefinition, runBuildAll } = require('./compileTs');
+//const { runCompileTs, fixFileDefinition, runBuildAll } = require('./compileTs');
+const { runCompileTs, fixFileDefinition } = require('./compileTs_old');
 const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
 const { runCreateTsconfig } = require('./createTsConfig');
