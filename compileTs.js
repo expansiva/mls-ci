@@ -76,6 +76,21 @@ function resolveJsOutputPath(tsPath) {
     );
 }
 
+function resolveJsOutputPathOtherProject(tsPath) {
+    const projectRoot = path.resolve(__dirname, '../..');
+
+    const relative = path.relative(
+        path.join(projectRoot, 'project'),
+        tsPath
+    );
+
+    return path.join(
+        projectRoot,
+        'otherProjectCompiled',
+        relative.replace(/\.ts$/, '.js')
+    );
+}
+
 /* ============================
    COMPILA 1 ARQUIVO COM ESBUILD
 ============================ */
@@ -103,6 +118,29 @@ async function compileSingleFileToDisk(tsFilePath) {
 
 async function compileEnhancementToDisk(tsFilePath) {
     const jsPath = resolveJsOutputPath(tsFilePath);
+    await fs.mkdir(path.dirname(jsPath), { recursive: true });
+
+    await esbuild.build({
+        entryPoints: [tsFilePath],
+        outfile: jsPath,
+        bundle: true,                // ✅ EMBUTE TUDO
+        platform: 'node',
+        format: 'esm',
+        target: 'es2022',
+        tsconfig: path.resolve(__dirname, '../../tsconfig.json'),
+        sourcemap: false,
+        external: [],                // garante que nada fique de fora
+        treeShaking: true,
+        resolveExtensions: ['.ts', '.js'],
+        logLevel: 'silent',
+        legalComments: 'inline'
+    });
+
+    console.log(`🔥 Compilado (enhancement): ${path.basename(tsFilePath)} -> ${jsPath}`);
+}
+
+async function compileEnhancementOtherProjectToDisk(tsFilePath) {
+    const jsPath = resolveJsOutputPathOtherProject(tsFilePath);
     await fs.mkdir(path.dirname(jsPath), { recursive: true });
 
     await esbuild.build({
@@ -157,22 +195,37 @@ async function compileSingleFileToString(tsFilePath) {
 /* ============================
    LOADER DO ENHANCEMENT
 ============================ */
-async function loadEnhancement(enhancementName) {
+async function loadEnhancement(project, enhancementName) {
     if (enhancementCache.has(enhancementName)) {
         return enhancementCache.get(enhancementName);
     }
 
     const projectRoot = path.resolve(__dirname, '../..');
     const infoFile = parseFilePath(enhancementName);
+    let enhancementPath = '';
 
-    const enhancementPath = path.join(
-        projectRoot,
-        'preBuild',
-        infoFile.project,
-        'l2',
-        infoFile.folder || '',
-        infoFile.file + '.js'
-    );
+    if (infoFile.project !== `_${project}_`) {
+        await compileEnhancementOtherProjectToDisk(path.join(projectRoot, 'project', infoFile.project , 'l2', infoFile.folder || '', infoFile.file + '.ts'));
+
+        enhancementPath = path.join(
+            projectRoot,
+            'otherProjectCompiled',
+            infoFile.project,
+            'l2',
+            infoFile.folder || '',
+            infoFile.file + '.js'
+        );
+    } else {
+
+        enhancementPath = path.join(
+            projectRoot,
+            'preBuild',
+            infoFile.project,
+            'l2',
+            infoFile.folder || '',
+            infoFile.file + '.js'
+        );
+    }
 
     const mod = await require(enhancementPath);
     enhancementCache.set(enhancementName, mod);
@@ -310,7 +363,7 @@ async function compileNormalFile(filePath, project) {
     let jsOutput = '';
 
     console.log(`✨ Compilando ${path.basename(filePath)} com enhancement ${enhancementName}...`);
-    const enhancement = await loadEnhancement(enhancementName);
+    const enhancement = await loadEnhancement(project, enhancementName);
 
     jsOutput = await compileSingleFileToString(filePath);
     const sourceLess = await getLessFile(filePath);
