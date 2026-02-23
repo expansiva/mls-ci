@@ -35,11 +35,12 @@ async function runCI() {
         console.log('----------End preCompile------------------');
 
         console.log('----------Start compileTs------------------');
-        await runBuildAll(COLLAB_PROJECT);
+        if(COLLAB_PROJECT == '100554'){ await runBuildAll(COLLAB_PROJECT);} else {await runCompileTs();}
         //await runCompileTs();
         console.log('----------End compileTs------------------');
 
         //console.log('----------Start processCSS------------------');
+        if(COLLAB_PROJECT != '100554'){ await runProcessCss(COLLAB_PROJECT);}
         //await runProcessCss(COLLAB_PROJECT);
         //console.log('----------End processCSS------------------');
 
