@@ -1,7 +1,6 @@
 const { runDownload } = require('./download');
 const { runPreCompile } = require('./preCompile');
-//const { runCompileTs, fixFileDefinition, runBuildAll } = require('./compileTs');
-const { runCompileTs, fixFileDefinition } = require('./compileTs_old');
+const { runCompileTs, fixFileDefinition, runBuildAll } = require('./compileTs');
 const { runCreateFileInfo } = require('./createFileInfo');
 const { runCompact } = require('./compact');
 const { runCreateTsconfig } = require('./createTsConfig');
@@ -36,12 +35,12 @@ async function runCI() {
         console.log('----------End preCompile------------------');
 
         console.log('----------Start compileTs------------------');
-        //await runBuildAll(COLLAB_PROJECT);
-        await runCompileTs();
+        await runBuildAll(COLLAB_PROJECT);
+        //await runCompileTs();
         console.log('----------End compileTs------------------');
 
         //console.log('----------Start processCSS------------------');
-        await runProcessCss(COLLAB_PROJECT);
+        //await runProcessCss(COLLAB_PROJECT);
         //console.log('----------End processCSS------------------');
 
         console.log('----------Start compileTs Definition------------------');
