@@ -227,7 +227,9 @@ async function loadEnhancement(project, enhancementName) {
         );
     }
 
-    const mod = await require(enhancementPath);
+    //const mod = await require(enhancementPath);
+    const { pathToFileURL } = require('url');
+    const mod = await import(pathToFileURL(enhancementPath).href);
     enhancementCache.set(enhancementName, mod);
     return mod;
 }
