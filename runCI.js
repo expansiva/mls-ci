@@ -28,7 +28,7 @@ async function runCI() {
         console.log('----------End download------------------');
 
         console.log('----------Start createTsConfig------------------');
-        await runCreateTsconfig();
+        await runCreateTsconfig(COLLAB_PROJECT);
         console.log('----------End createTsConfig------------------');
 
         console.log('----------Start preCompile------------------');
