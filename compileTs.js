@@ -14,9 +14,9 @@ const enhancementCache = new Map();
 
 async function runCompileTs(project, isDefinition = false) {
 
-    await moveMlsPackagesToProject();
+    if(!isDefinition) await moveMlsPackagesToProject();
     await runCompileTsAllFiles(isDefinition);
-    await runBuildEnhancement(project);
+    if(!isDefinition) await runBuildEnhancement(project);
 }
 
 async function runBuildEnhancement(project) {
