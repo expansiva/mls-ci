@@ -38,9 +38,9 @@ async function runCI() {
         await runCompileTs(COLLAB_PROJECT);
         console.log('----------End compileTs------------------');
 
-        //console.log('----------Start processCSS------------------');
-        //await runProcessCss(COLLAB_PROJECT);
-        //console.log('----------End processCSS------------------');
+        console.log('----------Start processCSS------------------');
+        if(COLLAB_PROJECT != '100554') await runProcessCss(COLLAB_PROJECT);
+        console.log('----------End processCSS------------------');
 
         console.log('----------Start compileTs Definition------------------');
         await runCompileTs(COLLAB_PROJECT, true);
