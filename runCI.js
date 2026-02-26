@@ -43,7 +43,7 @@ async function runCI() {
         //console.log('----------End processCSS------------------');
 
         console.log('----------Start compileTs Definition------------------');
-        await runCompileTs(true);
+        await runCompileTs(COLLAB_PROJECT, true);
         await fixFileDefinition();
         console.log('----------End compileTs Definition------------------');
 
