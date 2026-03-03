@@ -72,14 +72,21 @@ function getFilesOID(commit) {
 
 function getDateCommit(filePath) {
     return new Promise((resolve, reject) => {
-        exec(`git log -1 --format="%aI" -- ${filePath}`, (err, stdout, stderr) => {
-            if (err) {
-                reject(`Error getting version for file ${filePath}: ${stderr}`);
-                return;
-            }
-           console.log(`filePath:${filePath} stdout:${stdout}`);
-            resolve(stdout.trim());
-        });
+
+        try {
+            exec(`git log -1 --format="%aI" -- ${filePath}`, (err, stdout) => {
+
+                if (err || !stdout || !stdout.trim()) {
+                    console.log(`Error getting version for file ${filePath}`);
+                    return resolve(new Date().toISOString());
+                }
+                console.log(`filePath:${filePath} stdout:${stdout}`);
+                resolve(stdout.trim());
+            });
+
+        } catch {
+            resolve(new Date().toISOString());
+        }
     });
 } 
 
