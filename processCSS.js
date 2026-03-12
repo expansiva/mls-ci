@@ -226,8 +226,8 @@ async function addCssWithOutShadowRoot(code, css) {
         const lineToAdd = `if(this.loadStyle) this.loadStyle(\`${css}\`);`
         const lines = code.split('\n');
         const lineMls = Array.from(lines).find((l) => l.trim().startsWith('/// <mls ') && l.trim().endsWith('/>'))
-        const hasEnhancementLit = lineMls ? lineMls.includes('_100554_enhancementLit') : false;
-        if (!hasEnhancementLit || !css) return code;
+        const hasEnhancementBlank = lineMls ? lineMls.includes('_blank') : true;
+        if (hasEnhancementBlank || !css) return code;
 
         let insideClass = false;
         let constructorIndex = -1;
