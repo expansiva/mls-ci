@@ -176,7 +176,7 @@ async function directoryExists(directoryPath) {
    LOADER DO ENHANCEMENT
 ============================ */
 
-async function loadEnhancement(enhancementName) {
+async function loadEnhancement_old(enhancementName) {
     if (enhancementCache.has(enhancementName)) {
         return enhancementCache.get(enhancementName);
     }
@@ -205,10 +205,38 @@ async function loadEnhancement(enhancementName) {
     return mod;
 }
 
+async function loadEnhancement(enhancementName) {
+    if (enhancementCache.has(enhancementName)) {
+        return enhancementCache.get(enhancementName);
+    }
+
+    const projectRoot = path.resolve(__dirname, '../..');
+    const infoFile = parseFilePath(enhancementName);
+    let enhancementPath = '';
+
+
+    await compileEnhancementProjectToDisk(path.join(projectRoot, 'project', infoFile.project, infoFile.folder || 'l2', infoFile.name + '.ts'));
+
+    enhancementPath = path.join(
+        projectRoot,
+        'enhancementProjectCompiled',
+        infoFile.project,
+        infoFile.folder || 'l2',
+        infoFile.name + '.js'
+    );
+
+
+    //const mod = await require(enhancementPath);
+    const { pathToFileURL } = require('url');
+    const mod = await import(pathToFileURL(enhancementPath).href);
+    enhancementCache.set(enhancementName, mod);
+    return mod;
+}
+
 /* ============================
    PARSE PATH _100554_/foo/bar.ts
 ============================ */
-function parseFilePath(fullPath) {
+function parseFilePath_old(fullPath) {
     const match = fullPath.match(/^(_\d+_)\/?(.*)/);
     if (!match) return { project: "", folder: "", file: fullPath };
 
@@ -219,6 +247,38 @@ function parseFilePath(fullPath) {
     const folder = parts.join('/');
 
     return { project, folder, file };
+}
+
+function parseFilePath(input) {
+  // remove extensão
+  const noExt = input.replace(/\.(ts|js)$/i, '');
+
+  // caso: _100554_enhancementLit.ts
+  const simpleMatch = noExt.match(/^(_\d+)_([^/]+)$/);
+  if (simpleMatch) {
+    const project = simpleMatch[1] + "_";
+    const name = simpleMatch[2];
+
+    return {
+      project,
+      folder: "",
+      name,
+      file: `${project}${name}`
+    };
+  }
+
+  const parts = noExt.split('/');
+
+  const project = parts.shift();
+  const name = parts.pop();
+  const folder = parts.join('/');
+
+  return {
+    project,
+    folder,
+    name,
+    file: noExt
+  };
 }
 
 /* ============================
