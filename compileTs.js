@@ -303,7 +303,8 @@ async function compileEnhancementProjectToDisk(tsFilePath) {
         treeShaking: true,
         resolveExtensions: ['.ts', '.js'],
         logLevel: 'silent',
-        legalComments: 'inline'
+        legalComments: 'inline',
+        external: ["lit", "lit/decorators.js"]
     });
 
     console.log(`🔥 Compilado (enhancement): ${path.basename(tsFilePath)} -> ${jsPath}`);
