@@ -148,7 +148,7 @@ async function requireFromMemory(filePath) {
    GET LESS FILE
 ============================ */
 
-async function getLessFile(filePath) {
+async function getLessFile_old(filePath) {
     const projectRoot = path.join(__dirname, '../..');
     const fileName = path.basename(filePath);
     const lessName = fileName.replace(/\.(ts|js)$/, '.less');
@@ -162,6 +162,31 @@ async function getLessFile(filePath) {
 
     const fileContent = await fs.readFile(pathComponent, 'utf8');
     return fileContent + '\n';
+}
+
+async function getLessFile(filePath) {
+    const projectRoot = path.join(__dirname, '../..');
+    const fileName = path.basename(filePath);
+    const folder = getFolderBetweenL2AndFile(filePath);
+    const lessName = fileName.replace(/\.(ts|js)$/, '.less');
+    const pathComponent = path.join(projectRoot, 'l2', folder, lessName);
+
+    const fileExist = await directoryExists(pathComponent);
+    console.log('Procurando arquivo LESS em' + fileExist, pathComponent);
+    if (!fileExist) {
+        return '';
+    }
+
+    const fileContent = await fs.readFile(pathComponent, 'utf8');
+    return fileContent + '\n';
+}
+
+function getFolderBetweenL2AndFile(filePath) {
+  const parts = filePath.split('/');
+  const l2Index = parts.indexOf('l2');
+  if (l2Index === -1) return  '';
+  const middle = parts.slice(l2Index + 1, parts.length - 1);
+  return middle.length ? middle.join('/') : '';
 }
 
 async function directoryExists(directoryPath) {
