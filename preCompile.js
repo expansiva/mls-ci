@@ -52,30 +52,18 @@ async function runPreCompile() {
         console.log('Get prj name:', prefix);
 
         const projectRoot = path.resolve(__dirname, '../..');
-        const srcDir = path.join(projectRoot, 'l2');
-        const destDir = path.join(projectRoot, 'project'+'/'+prefix+'/l2');
+        
+        for (const dir of ['l2', 'l1']) {
+            const srcDir = path.join(projectRoot, dir);
+            const destDir = path.join(projectRoot, 'project' + '/' + prefix + '/' + dir);
 
-        if (!fs.existsSync(destDir)) {
-            fs.mkdirSync(destDir, { recursive: true });
+            if (!fs.existsSync(destDir)) {
+                fs.mkdirSync(destDir, { recursive: true });
+            }
+
+            await deleteAllFilesInDirectory(destDir);
+            await copyTsFilesRecursively(srcDir, destDir, dir);
         }
-
-        await deleteAllFilesInDirectory(destDir);
-        await copyTsFilesRecursively(srcDir, destDir, 'l2');
-
-        /*const projectRoot = path.resolve(__dirname, '../..');
-        const srcDir = path.join(projectRoot, 'l2');
-        const destDir = path.join(projectRoot, 'prel2');
-
-        let prefix = await getProjectName();
-        prefix = `_${prefix}_`;
-        console.log('Get prj name');
-
-        if (!fs.existsSync(destDir)) {
-            fs.mkdirSync(destDir, { recursive: true });
-        }
-
-        await deleteAllFilesInDirectory(destDir);
-        await copyTsFilesRecursively(srcDir, destDir, prefix);*/
 
     } catch (error) {
         throw new Error('Erro runPreCompile:' + error.message)
