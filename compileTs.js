@@ -36,7 +36,11 @@ async function processDirectory(project, dir) {
         if (entry.isDirectory()) {
             await processDirectory(project, fullPath); // recursivo
         } else if (entry.isFile()) {
-            await processFile(project, fullPath);
+            if(fullPath.indexOf('/l1/') > 0){
+
+            }else if(fullPath.indexOf('/l2/') > 0){
+                await processFile(project, fullPath);
+            }
         }
     }
 }
