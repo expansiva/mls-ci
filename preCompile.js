@@ -57,6 +57,11 @@ async function runPreCompile() {
             const srcDir = path.join(projectRoot, dir);
             const destDir = path.join(projectRoot, 'project' + '/' + prefix + '/' + dir);
 
+            if (!fs.existsSync(srcDir)) {
+                console.warn(`Not found, next: ${srcDir}`);
+                continue;
+            }
+
             if (!fs.existsSync(destDir)) {
                 fs.mkdirSync(destDir, { recursive: true });
             }
