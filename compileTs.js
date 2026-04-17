@@ -14,9 +14,11 @@ const enhancementCache = new Map();
 
 async function runCompileTs(project, isDefinition = false) {
 
-    if(project == '100554' && !isDefinition) await moveMlsPackagesToProject();
+    //if(project == '100554' && !isDefinition) await moveMlsPackagesToProject();
+    if(['100554','102027'].includes(project) && !isDefinition) await moveMlsPackagesToProject();
     await runCompileTsAllFiles(isDefinition);
-    if(project == '100554' && !isDefinition) await runBuildEnhancement(project);
+    //if(project == '100554' && !isDefinition) await runBuildEnhancement(project);
+    if(['100554','102027'].includes(project) && !isDefinition) await runBuildEnhancement(project);
 }
 
 async function runBuildEnhancement(project) {
