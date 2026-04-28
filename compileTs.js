@@ -470,9 +470,9 @@ async function fixFileDefinition() {
         }
 
         // 3. SALVAR O CONTEÚDO CORRIGIDO
-        //await fs.writeFile(filePath, fixedContent, 'utf8');
-        const wrapped = `export {};\n\ndeclare global {\n${fixedContent}\n}\n`;
-        await fs.writeFile(filePath, wrapped, 'utf8');
+        await fs.writeFile(filePath, fixedContent, 'utf8');
+        //const wrapped = `export {};\n\ndeclare global {\n${fixedContent}\n}\n`;
+        //await fs.writeFile(filePath, wrapped, 'utf8');
 
         console.log('✨ Arquivo corrigido e salvo com sucesso!');
         console.log(`Corrigido ${content.split('\n').length - fixedContent.split('\n').length} importações.`);
