@@ -14,12 +14,8 @@ const enhancementCache = new Map();
 
 async function runCompileTs(project, isDefinition = false) {
 
-    //if(project == '100554' && !isDefinition) await moveMlsPackagesToProject();
-    //if(['100554','102027'].includes(project) && !isDefinition) await moveMlsPackagesToProject();
     if(!isDefinition) await moveMlsPackagesToProject();
     await runCompileTsAllFiles(isDefinition);
-    //if(project == '100554' && !isDefinition) await runBuildEnhancement(project);
-    //if(['100554','102027'].includes(project) && !isDefinition) await runBuildEnhancement(project);
     if(!isDefinition) await runBuildEnhancement(project);
 }
 
@@ -42,7 +38,7 @@ async function processDirectory(project, dir) {
         } else if (entry.isFile()) {
             if(fullPath.indexOf('/l1/') > 0){
 
-            }else if(fullPath.indexOf('/l2/') > 0){
+            }else if(fullPath.indexOf('/l2/') > 0 && (fullPath.endsWith('.js') || fullPath.endsWith('.ts'))){
                 await processFile(project, fullPath);
             }
         }
@@ -156,22 +152,6 @@ async function requireFromMemory(filePath) {
    GET LESS FILE
 ============================ */
 
-async function getLessFile_old(filePath) {
-    const projectRoot = path.join(__dirname, '../..');
-    const fileName = path.basename(filePath);
-    const lessName = fileName.replace(/\.(ts|js)$/, '.less');
-    const pathComponent = path.join(projectRoot, 'l2', lessName);
-
-    const fileExist = await directoryExists(pathComponent);
-    console.log('Procurando arquivo LESS em' + fileExist, pathComponent);
-    if (!fileExist) {
-        return '';
-    }
-
-    const fileContent = await fs.readFile(pathComponent, 'utf8');
-    return fileContent + '\n';
-}
-
 async function getLessFile(filePath) {
     const projectRoot = path.join(__dirname, '../..');
     const fileName = path.basename(filePath);
@@ -180,7 +160,7 @@ async function getLessFile(filePath) {
     const pathComponent = path.join(projectRoot, 'l2', folder, lessName);
 
     const fileExist = await directoryExists(pathComponent);
-    console.log('Procurando arquivo LESS em' + fileExist, pathComponent);
+    //console.log('Procurando arquivo LESS em' + fileExist, pathComponent);
     if (!fileExist) {
         return '';
     }
@@ -330,7 +310,7 @@ async function compileEnhancementProjectToDisk(tsFilePath) {
         platform: 'node',
         format: 'esm',
         target: 'es2022',
-        tsconfig: path.resolve(__dirname, '../../tsconfig.json'),
+        tsconfig: path.resolve(__dirname, '../../tsconfig_p.json'),
         sourcemap: false,
         external: [],                // garante que nada fique de fora
         treeShaking: true,
@@ -407,8 +387,6 @@ async function moveMlsPackagesToProject() {
             console.error(`❌ Erro ao mover ${originalName}:`, err.message);
         }
     }
-
-    console.log('🚀 Movimento concluído!');
 }
 
 
@@ -421,7 +399,7 @@ async function runCompileTsAllFiles(isDefinition = false) { // runCompileTs
     return new Promise((resolve, reject) => {
 
         // Caminho para o arquivo de configuração tsconfig.json
-        const tsConfigPath = isDefinition ? './tsconfig_d.json' : './tsconfig.json'; //path.resolve(__dirname, 'tsconfig.json');
+        const tsConfigPath = isDefinition ? './tsconfig_d.json' : './tsconfig_p.json'; //path.resolve(__dirname, 'tsconfig.json');
 
         // Comando para executar o TypeScript Compiler (tsc)
         const command = `tsc -p ${tsConfigPath}`;
@@ -434,7 +412,7 @@ async function runCompileTsAllFiles(isDefinition = false) { // runCompileTs
                 reject(new Error(stderr));
                 return;
             }
-            console.log(`Compilação TypeScript bem-sucedida:\n${stdout}`);
+
             resolve(stdout);
         });
     });
@@ -455,8 +433,6 @@ async function fixFileDefinition() {
     try {
 
 
-        console.log(`Lendo o arquivo: ${filePath}`);
-
         // 1. LER O CONTEÚDO DO ARQUIVO
         let content = await fs.readFile(filePath, 'utf8');
 
@@ -465,7 +441,6 @@ async function fixFileDefinition() {
 
         // Verificar se houve alguma alteração antes de salvar
         if (content === fixedContent) {
-            console.log(' Nenhuma correção necessária. O arquivo já está formatado corretamente.');
             return;
         }
 
@@ -474,8 +449,6 @@ async function fixFileDefinition() {
         //const wrapped = `export {};\n\ndeclare global {\n${fixedContent}\n}\n`;
         //await fs.writeFile(filePath, wrapped, 'utf8');
 
-        console.log('✨ Arquivo corrigido e salvo com sucesso!');
-        console.log(`Corrigido ${content.split('\n').length - fixedContent.split('\n').length} importações.`);
 
     } catch (error) {
         console.error(` Erro ao processar o arquivo ${filePath}:`, error.message);
