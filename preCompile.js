@@ -49,8 +49,7 @@ async function runPreCompile() {
 
         let prefix = await getProjectName();
         prefix = `_${prefix}_`;
-        console.log('Get prj name:', prefix);
-
+       
         const projectRoot = path.resolve(__dirname, '../..');
         
         for (const dir of ['l2', 'l1']) {
@@ -89,7 +88,6 @@ async function copyTsFilesRecursively(srcDir, destDir, prefix) {
             //const renamedDest = path.join(destDir, prefix + entry.name);
             const renamedDest = path.join(destDir, entry.name);
             await fs.promises.copyFile(srcPath, renamedDest);
-            console.log(`Copied: ${srcPath} -> ${renamedDest}`);
         }
     }
 }
