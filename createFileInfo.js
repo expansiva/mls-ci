@@ -14,11 +14,9 @@ async function getAllFiles(dirPath, arrayOfFiles = []) {
 
             await getAllFiles(filePath, arrayOfFiles);
         } else if (stat.isFile() && (filePath.indexOf("\\l") >= 0 || filePath.indexOf("/l") >= 0)) {
-            console.log(`file: ${filePath} `);
             arrayOfFiles.push(filePath);
         } else if (stat.isFile() && ['package.json', 'README.md', 'readme.md', 'tsconfig.json'].includes(file)){
             const f = path.join(dirPath, 'l0/' + file);
-            console.log(`file: ${f} `);
             arrayOfFiles.push(f);
         }
     }
@@ -80,7 +78,7 @@ function getDateCommit(filePath) {
                     console.log(`Error getting version for file ${filePath}`);
                     return resolve(new Date().toISOString());
                 }
-                console.log(`filePath:${filePath} stdout:${stdout}`);
+
                 resolve(stdout.trim());
             });
 
@@ -168,8 +166,6 @@ async function runCreateFileInfo() {
         // Escrever as informações no arquivo fileinfos.json
         const outputPath = path.join(projectRoot, 'preBuild/fileinfos.json');
         await fs.promises.writeFile(outputPath, JSON.stringify(js, null, 2));
-
-        console.log(`File information has been written to ${outputPath}`);
 
         return lastModify.toISOString();
 
