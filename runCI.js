@@ -39,7 +39,7 @@ async function runCI() {
         console.log('----------End compileTs------------------');
 
         console.log('----------Start processCSS------------------');
-        if(COLLAB_PROJECT != '100554') await runProcessCss(COLLAB_PROJECT);
+        //if(COLLAB_PROJECT != '100554') await runProcessCss(COLLAB_PROJECT);
         console.log('----------End processCSS------------------');
 
         console.log('----------Start compileTs Definition------------------');
