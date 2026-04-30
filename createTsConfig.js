@@ -72,7 +72,7 @@ async function runCreateTsconfig(project) {
         "strict": true,
         "removeComments": false,
         "noUnusedParameters": false,
-        "skipLibCheck": false,
+        "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "sourceMap": false,
         "declaration": false,
