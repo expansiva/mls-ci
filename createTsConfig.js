@@ -64,8 +64,8 @@ async function runCreateTsconfig(project) {
 
     const tsconfigProject = {
       "compilerOptions": {
-        "target": tsconfig.compilerOptions?.target || "es2020",
-        "module": tsconfig.compilerOptions?.module || "ES2020",
+        "target": "es2020",
+        "module": "ES2020",
         "esModuleInterop": true,
         "outDir": "./preBuild/_" + project + "_/",
         "rootDir": "./project/_" + project + "_",
