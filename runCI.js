@@ -76,4 +76,4 @@ async function runCI() {
 
 }
 
-module.exports = {runCI};
+module.exports = {runCI, runDownload};
