@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { exec, execSync } = require('child_process');
 const fs = require('fs').promises;
 const path = require('path');
 const esbuild = require('esbuild');
@@ -358,6 +358,35 @@ async function moveMlsPackagesToProject() {
 
     if (!mlsFolders.length) {
         console.log('ℹ️ Nenhum pacote mls-* encontrado.');
+
+        const configPath = path.join(projectRoot, 'config.json');
+        if (!fsr.existsSync(configPath)) return;
+
+        const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+        const deps = Object.entries(config.workspaceDependencies ?? {});
+        if (!deps.length) return;
+
+        console.log(`📦 Baixando ${deps.length} dependências de workspaceDependencies...`);
+
+        for (const [projectId, dep] of deps) {
+            if (!dep.repo) continue;
+
+            const destName = `_${projectId}_`;
+            const destPath = path.join(projectPath, destName);
+
+            if (!fsr.existsSync(destPath)) {
+                console.log(`⬇️ Clonando ${projectId} de ${dep.repo}...`);
+                execSync(`git clone "${dep.repo}" "${destPath}"`, { stdio: 'inherit' });
+            }
+
+            if (dep.commit) {
+                console.log(`🔀 Checkout ${projectId} @ ${dep.commit}`);
+                execSync(`git -C "${destPath}" checkout --detach ${dep.commit}`, { stdio: 'inherit' });
+            }
+
+            console.log(`✅ ${projectId} → project/${destName}`);
+        }
+
         return;
     }
 
