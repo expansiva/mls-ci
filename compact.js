@@ -55,7 +55,24 @@ function moveAndOverwriteFile(src, destDir, dest) {
     });
 }
 
+function removeL1Directories(dir) {
+    if (!fs.existsSync(dir)) return;
+    const items = fs.readdirSync(dir, { withFileTypes: true });
+    for (const item of items) {
+        const fullPath = path.join(dir, item.name);
+        if (item.isDirectory()) {
+            if (item.name === 'l1') {
+                fs.rmSync(fullPath, { recursive: true, force: true });
+            } else {
+                removeL1Directories(fullPath);
+            }
+        }
+    }
+}
+
 async function runCompact() {
+
+    removeL1Directories(sourceDir);
 
     const source = sourceDir;
     const out = outputZip;
