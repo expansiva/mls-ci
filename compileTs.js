@@ -379,10 +379,10 @@ async function moveMlsPackagesToProject() {
                 execSync(`git clone "${dep.repo}" "${destPath}"`, { stdio: 'inherit' });
             }
 
-            if (dep.commit) {
+            /*if (dep.commit) {
                 console.log(`🔀 Checkout ${projectId} @ ${dep.commit}`);
                 execSync(`git -C "${destPath}" checkout --detach ${dep.commit}`, { stdio: 'inherit' });
-            }
+            }*/
 
             console.log(`✅ ${projectId} → project/${destName}`);
         }

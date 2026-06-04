@@ -13,14 +13,22 @@ async function runCreateTsconfig(project) {
     const tsconfigDPath = path.join(rootDir, 'tsconfig_d.json');
     const tsconfigProjectPath = path.join(rootDir, 'tsconfig_p.json');
 
-    // Ler o tsconfig.json
-    const data = await fs.readFile(tsconfigPath, 'utf8');
+    // Ler o tsconfig.json ou derivar paths do config.json
+    let paths;
+    const tsconfigExists = await fs.access(tsconfigPath).then(() => true).catch(() => false);
 
-    // Parse do JSON
-    const tsconfig = JSON.parse(data);
-
-    // Extrair os paths
-    const paths = normalizePaths(tsconfig.compilerOptions?.paths || {});
+    if (tsconfigExists) {
+      const data = await fs.readFile(tsconfigPath, 'utf8');
+      const tsconfig = JSON.parse(data);
+      paths = normalizePaths(tsconfig.compilerOptions?.paths || {});
+    } else {
+      const configPath = path.join(rootDir, 'config.json');
+      const configExists = await fs.access(configPath).then(() => true).catch(() => false);
+      if (!configExists) throw new Error('tsconfig.json e config.json não encontrados');
+      const configData = await fs.readFile(configPath, 'utf8');
+      const config = JSON.parse(configData);
+      paths = buildPathsFromConfig(config, project);
+    }
 
     // Criar o novo conteúdo do tsconfig_d.json
     const tsconfigD = {
@@ -111,6 +119,15 @@ async function runCreateTsconfig(project) {
 
   }
 
+}
+
+function buildPathsFromConfig(config, project) {
+  const deps = config.workspaceDependencies || {};
+  let ret = Object.fromEntries(
+    Object.keys(deps).map(key => [`/_${key}_/*`, [`./project/_${key}_/*`]])
+  );
+  ret = { ["/_"+project+"_/"] : [ "./*" ] , ...ret };
+  return ret;
 }
 
 function normalizePaths(obj) {
