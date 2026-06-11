@@ -14,9 +14,9 @@ const enhancementCache = new Map();
 
 async function runCompileTs(project, isDefinition = false) {
 
-    if (!isDefinition) await moveMlsPackagesToProject();
+    if(!isDefinition) await moveMlsPackagesToProject();
     await runCompileTsAllFiles(isDefinition);
-    if (!isDefinition) await runBuildEnhancement(project);
+    if(!isDefinition) await runBuildEnhancement(project);
 }
 
 async function runBuildEnhancement(project) {
@@ -36,9 +36,9 @@ async function processDirectory(project, dir) {
         if (entry.isDirectory()) {
             await processDirectory(project, fullPath); // recursivo
         } else if (entry.isFile()) {
-            if (fullPath.indexOf('/l1/') > 0) {
+            if(fullPath.indexOf('/l1/') > 0){
 
-            } else if (fullPath.indexOf('/l2/') > 0 && (fullPath.endsWith('.js') || fullPath.endsWith('.ts'))) {
+            }else if(fullPath.indexOf('/l2/') > 0 && (fullPath.endsWith('.js') || fullPath.endsWith('.ts'))){
                 await processFile(project, fullPath);
             }
         }
@@ -72,8 +72,8 @@ async function processFile(project, filePath) {
 
         const enhancementModule = await loadEnhancement(enhancementValue);
         const sourceLess = await getLessFile(filePath);
-        const sourceTokens = await getTokensFileDesignSystem(project);
-        const newSource = enhancementModule.onAfterCompileAction ? await enhancementModule.onAfterCompileAction(content, tsSource, { sourceLess, sourceTokens }) : content;
+        const sourceTokens =  await getTokensFileDesignSystem(project);
+        const newSource = enhancementModule.onAfterCompileAction ? await enhancementModule.onAfterCompileAction(content, tsSource, {sourceLess, sourceTokens}) : content;
 
 
         if (newSource && newSource !== content) {
@@ -124,39 +124,29 @@ async function getTokensFileDesignSystem(project) {
 
 async function requireFromMemory(filePath) {
     try {
-        // Verifica se o arquivo existe
-        await fs.promises.access(filePath, fs.constants.F_OK);
-
         // Lê o conteúdo do arquivo
-        const fileContent = await fs.promises.readFile(filePath, 'utf-8');
+        const fileContent = await fsr.promises.readFile(filePath, 'utf-8');
 
         // Converte múltiplos "export const <name> =" para "exports.<name> ="
-        const modifiedContent = fileContent.replace(
-            /export\s+const\s+(\w+)\s*=/g,
-            'exports.$1 ='
-        );
+        const modifiedContent = fileContent.replace(/export\s+const\s+(\w+)\s*=/g, 'exports.$1 =');
 
         // Cria um arquivo temporário
         const tempFilePath = path.join(tmpdir(), `temp_module_${Date.now()}.js`);
-        await fs.promises.writeFile(tempFilePath, modifiedContent, 'utf-8');
+        await fsr.promises.writeFile(tempFilePath, modifiedContent, 'utf-8');
 
         // Carrega o módulo usando require
         const requiredModule = require(tempFilePath);
 
         // Remove o arquivo temporário
-        fs.unlink(tempFilePath, (err) => {
-            if (err) {
-                console.error('Erro ao remover o arquivo temporário:', err);
-            }
+        fsr.unlink(tempFilePath, (err) => {
+            if (err) console.error('Erro ao remover o arquivo temporário:', err);
         });
 
         return requiredModule;
     } catch (error) {
-        if (error.code === 'ENOENT') {
-            return {};
-        }
+        console.error('Erro ao processar o arquivo:', error);
 
-        return {};
+        return null;
     }
 }
 
@@ -182,11 +172,11 @@ async function getLessFile(filePath) {
 }
 
 function getFolderBetweenL2AndFile(filePath) {
-    const parts = filePath.split('/');
-    const l2Index = parts.indexOf('l2');
-    if (l2Index === -1) return '';
-    const middle = parts.slice(l2Index + 1, parts.length - 1);
-    return middle.length ? middle.join('/') : '';
+  const parts = filePath.split('/');
+  const l2Index = parts.indexOf('l2');
+  if (l2Index === -1) return  '';
+  const middle = parts.slice(l2Index + 1, parts.length - 1);
+  return middle.length ? middle.join('/') : '';
 }
 
 async function directoryExists(directoryPath) {
@@ -275,35 +265,35 @@ function parseFilePath_old(fullPath) {
 }
 
 function parseFilePath(input) {
-    // remove extensão
-    const noExt = input.replace(/\.(ts|js)$/i, '');
+  // remove extensão
+  const noExt = input.replace(/\.(ts|js)$/i, '');
 
-    // caso: _100554_enhancementLit.ts
-    const simpleMatch = noExt.match(/^(_\d+)_([^/]+)$/);
-    if (simpleMatch) {
-        const project = simpleMatch[1] + "_";
-        const name = simpleMatch[2];
-
-        return {
-            project,
-            folder: "",
-            name,
-            file: `${project}${name}`
-        };
-    }
-
-    const parts = noExt.split('/');
-
-    const project = parts.shift();
-    const name = parts.pop();
-    const folder = parts.join('/');
+  // caso: _100554_enhancementLit.ts
+  const simpleMatch = noExt.match(/^(_\d+)_([^/]+)$/);
+  if (simpleMatch) {
+    const project = simpleMatch[1] + "_";
+    const name = simpleMatch[2];
 
     return {
-        project,
-        folder,
-        name,
-        file: noExt
+      project,
+      folder: "",
+      name,
+      file: `${project}${name}`
     };
+  }
+
+  const parts = noExt.split('/');
+
+  const project = parts.shift();
+  const name = parts.pop();
+  const folder = parts.join('/');
+
+  return {
+    project,
+    folder,
+    name,
+    file: noExt
+  };
 }
 
 /* ============================
