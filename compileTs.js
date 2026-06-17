@@ -52,7 +52,7 @@ async function processFile(project, filePath) {
 
         if (!content) return;
 
-        const lines = content.split(/\r?\n/);
+        const lines = tsSource.split(/\r?\n/);
         const firstLine = lines[0]?.trim();
 
         if (!firstLine?.startsWith('/// <mls ') || filePath.includes('designSystem') || filePath.includes('enhancement')) {
