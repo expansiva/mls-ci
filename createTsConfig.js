@@ -126,7 +126,7 @@ function buildPathsFromConfig(config, project) {
   let ret = Object.fromEntries(
     Object.keys(deps).map(key => [`/_${key}_/*`, [`./project/_${key}_/*`]])
   );
-  ret = { ["/_"+project+"_/"] : [ "./*" ] , ...ret };
+  ret = { ["/_"+project+"_/*"] : [ "./*" ] , ...ret };
   return ret;
 }
 
