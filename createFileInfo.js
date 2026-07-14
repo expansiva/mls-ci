@@ -6,18 +6,27 @@ const { exec } = require('child_process');
 async function getAllFiles(dirPath, arrayOfFiles = []) {
     const files = await fs.promises.readdir(dirPath);
 
+    // Determina quais root-files devem ser excluídos por terem uma versão "source" no lugar
+    const hasPackageLib  = files.includes('packagelib.json');
+    const hasTsconfigLib = files.includes('tsconfiglib.json');
+    const hasConfig      = files.includes('config.json');
+
+    const rootFiles = new Set(['package.json', 'README.md', 'readme.md', 'tsconfig.json', 'config.json', 'packagelib.json', 'tsconfiglib.json']);
+
     for (const file of files) {
         const filePath = path.join(dirPath, file);
         const stat = await fs.promises.stat(filePath);
 
         if (stat.isDirectory() && !['node_modules', 'prel2', 'project', 'preBuild', '.git', '.github', 'build', 'mls-ci', 'enhancementProjectCompiled'].includes(file)) {
-
             await getAllFiles(filePath, arrayOfFiles);
         } else if (stat.isFile() && (filePath.indexOf("\\l") >= 0 || filePath.indexOf("/l") >= 0)) {
             arrayOfFiles.push(filePath);
-        } else if (stat.isFile() && ['package.json', 'README.md', 'readme.md', 'tsconfig.json', 'config.json'].includes(file)){
-            const f = path.join(dirPath, 'l0/' + file);
-            arrayOfFiles.push(f);
+        } else if (stat.isFile() && rootFiles.has(file)) {
+            // package.json é gerado quando packagelib.json existe
+            if (file === 'package.json' && hasPackageLib) continue;
+            // tsconfig.json é gerado quando tsconfiglib.json ou config.json existe
+            if (file === 'tsconfig.json' && (hasTsconfigLib || hasConfig)) continue;
+            arrayOfFiles.push(path.join(dirPath, 'l0/' + file));
         }
     }
 
